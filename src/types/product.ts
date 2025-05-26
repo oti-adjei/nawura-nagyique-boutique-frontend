@@ -1,4 +1,4 @@
-// types/index.ts (No changes needed)
+
 // types/index.ts (or define near ProductCard if only used there)
 export interface Product {
     id: string | number;

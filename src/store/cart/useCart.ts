@@ -4,16 +4,6 @@ import { Product } from '@/types/product';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-// export type CartItem = {
-//     id: number;
-//     name: string;
-//     price: number;
-//     size: string;
-//     quantity: number;
-//     imageUrl: string;
-//     colors: string[]; // hex color codes
-// };
-
 export interface CartItem extends Product {
   quantity: number;
   selectedSize: string;

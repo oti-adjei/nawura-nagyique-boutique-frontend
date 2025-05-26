@@ -1,4 +1,3 @@
-// components/Collections.tsx
 import type { Collection } from '@/types/api'; // Adjust import path (ensure this type has 'id')
 import Image from 'next/image'; // Using next/image is recommended
 

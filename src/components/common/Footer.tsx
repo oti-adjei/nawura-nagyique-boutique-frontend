@@ -4,45 +4,6 @@ import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/f
 const Footer = () => {
 
     return (
-
-        // <footer className="bg-gray-100 py-10 px-4 md:px-10 text-sm text-gray-700">
-        //     <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        //         <div>
-        //             <h4 className="font-bold mb-2">Company</h4>
-        //             <ul className="space-y-1">
-        //                 <li>About Us</li>
-        //                 <li>Legal Notice</li>
-        //                 <li>Terms & Conditions</li>
-        //                 <li>Secure Payment</li>
-        //             </ul>
-        //         </div>
-        //         <div>
-        //             <h4 className="font-bold mb-2">Category</h4>
-        //             <ul className="space-y-1">
-        //                 <li>Clothes</li>
-        //                 <li>Shoes</li>
-        //                 <li>Watches</li>
-        //                 <li>Dresses</li>
-        //             </ul>
-        //         </div>
-        //         <div>
-        //             <h4 className="font-bold mb-2">Account</h4>
-        //             <ul className="space-y-1">
-        //                 <li>Sign In</li>
-        //                 <li>View Cart</li>
-        //                 <li>Become a Vendor</li>
-        //                 <li>Affiliate Program</li>
-        //             </ul>
-        //         </div>
-        //         <div>
-        //             <h4 className="font-bold mb-2">Contact</h4>
-        //             <p>123 Address Street<br />City, Country</p>
-        //             <p className="mt-2">+123 456 7890</p>
-        //             <p>email@example.com</p>
-        //         </div>
-        //     </div>
-        //     <p className="text-center mt-10">&copy; {new Date().getFullYear()} YourBrand. All rights reserved.</p>
-        // </footer>
         <footer className=" text-gray-700 text-sm  py-10 border-t border-gray-200">
             <div className="max-w-7xl mx-auto px-12 pb-10  grid grid-cols-1 md:grid-cols-5 gap-8">
 

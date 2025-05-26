@@ -1,5 +1,3 @@
-// types/index.ts (Example)
-
 export interface Category {
   id: number;
   name: string;

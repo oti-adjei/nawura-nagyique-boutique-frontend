@@ -17,36 +17,6 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
   const imageUrl = image?.url ? process.env.NEXT_PUBLIC_STRAPI_URL + image.url : null;
 
   return (
-    // <section className="relative w-full h-[400px] md:h-[500px] my-6">
-    //   {/* Use next/image or fallback to img */}
-    //   {imageUrl ? (
-    //      <Image
-    //         src={imageUrl}
-    //         alt={title || 'Legacy background'}
-    //         fill // Use fill to cover the container
-    //         className="object-cover"
-    //         priority // Consider adding priority if it's above the fold
-    //       />
-    //     // Fallback if using standard img tag:
-    //     // <img src={image} alt={title} className="w-full h-full object-cover" />
-    //   ) : (
-    //     <div className="w-full h-full bg-gray-300"></div> // Placeholder if no image
-    //   )}
-
-    //   <div className="absolute top-0 left-0 w-full h-full bg-black/50 flex items-center justify-center text-white p-4">
-    //     <div className="text-center max-w-xl">
-    //       <h2 className="text-2xl md:text-4xl font-bold mb-4">{title}</h2>
-    //       {/* Optionally display description if needed */}
-    //       {description && (
-    //         <p className="mb-6 text-base md:text-lg">{description}</p>
-    //       )}
-    //       {/* Use the cta text from the object */}
-    //       <button className="px-5 py-2.5 bg-white text-black rounded font-medium hover:bg-gray-200 transition">
-    //         {cta}
-    //       </button>
-    //     </div>
-    //   </div>
-    // </section>
     <section className="w-full my-10 px-4">
       <div className="flex flex-col md:flex-row items-center max-w-6xl mx-auto gap-8">
         {/* Left: Image */}

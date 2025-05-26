@@ -1,4 +1,3 @@
-// components/Features.tsx
 import type { Feature } from '@/types/api'; // Adjust import path (uses id, title, icon)
 import Image from 'next/image';
 

@@ -1,4 +1,3 @@
-// components/DayOfTheDeal.tsx
 import type { DealProduct } from '@/types/api'; // Adjust import path
 import Image from 'next/image'; // Using next/image is recommended
 

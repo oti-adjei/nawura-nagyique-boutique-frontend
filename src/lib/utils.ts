@@ -1,15 +1,22 @@
-// lib/strapi.ts (or any other appropriate utility file)
 
 const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
-async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: any) {
-  const token = process.env.STRAPI_API_TOKEN;
+export function getStrapiURL() {
+  return process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
+}
+export function getStrapiToken() {
+  return process.env.STRAPI_API_TOKEN;
+}
 
-  if (!STRAPI_URL) {
+async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: any) {
+  const token = getStrapiToken();
+  const SURL = getStrapiURL();
+
+  if (!SURL) {
     throw new Error("Strapi URL not configured.");
   }
 
-  const url = `${STRAPI_URL}/api/${endpoint}`;
+  const url = `${SURL}/api/${endpoint}`;
 
   console.log("url is " + url)
   const headers: HeadersInit = {};
