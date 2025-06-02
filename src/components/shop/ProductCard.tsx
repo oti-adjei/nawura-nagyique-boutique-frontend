@@ -4,14 +4,14 @@
 import Image from 'next/image';
 // import { Heart } from 'lucide-react';
 import LikeButton from './LikeButton';
-import { Product } from '@/types/product';
+import { DisplayProduct } from '@/types/product';
 import { useCartStore } from '@/store/cart/useCart';
 import { useState } from 'react';
 import { getStrapiMedia } from '@/lib/utils';
 
 // Define props to accept a single 'product' object
 interface ProductCardProps {
-  product: Product;
+  product: DisplayProduct;
 }
 
 

@@ -6,16 +6,17 @@ import Image from 'next/image';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaShoppingCart, } from 'react-icons/fa';
 // FaCcVisa, FaCcMastercard, FaCcAmex
 import { IoIosArrowDown } from 'react-icons/io';
-import type { Product } from '@/types/product'; // Adjust path if needed
+import type { DisplayProduct } from '@/types/product'; // Adjust path if needed
 import type { CartAdditionItem } from '@/types/cart'; // Adjust path, add CartAdditionItem
 import AddToCartToast from '@/components/cart/AddToCartToast';
 import { getStrapiMedia } from '@/lib/utils';
+import { CartItem, useCartStore } from '@/store/cart/useCart';
 
 
 
 // --- Define Props Interface ---
 interface ProductDisplayProps {
-  productData: Product; // Expect the product data as a prop
+  productData: DisplayProduct; // Expect the product data as a prop
 }
 
 export default function ProductDisplay({ productData }: ProductDisplayProps) {
@@ -56,24 +57,86 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
   // --- ADD THIS: handleAddToCart function ---
   const handleAddToCart = useCallback(() => {
-    // 1. --- Replace this with your ACTUAL Add to Cart logic ---
-    console.log(`Adding ${quantity} x ${product.name} (Size: ${selectedSize}) to cart`);
-    // Example: addToCartContext({ productId: product.id, quantity, size: selectedSize });
+  console.log("handleAddToCart FIRED!");
+  // Access the Zustand action
+  // const { addToCart } = useCartStore.getState(); // Or use the hook if preferred for reactivity
 
-    // 2. --- Prepare item data for the toast ---
-    const itemForToast: CartAdditionItem = {
-      name: product.name,
-      price: product.price,
-      // Use a relevant image, maybe the current main one or first thumbnail
-      imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
-      color: product.colors?.[0], // Add color if available/selected
-      size: selectedSize,
+  // Get the addItem action from your Zustand store
+    // Using .getState() is common for actions that don't need to trigger re-renders in this component directly.
+    // If your store setup returns actions from the hook itself, you might do:
+    // const { addItem } = useCartStore(); and add addItem to dependencies.
+    const addItemToCartStore = useCartStore.getState().addToCart; // Assuming your store has an 'addItem' action
+
+    // Construct the CartItem object
+    // It spreads all properties from 'product' (DisplayProduct)
+    // and adds/overrides 'quantity' and 'selectedSize'.
+    const cartItemToAdd: CartItem = {
+      ...product, // Spreads all properties from DisplayProduct
+      quantity: quantity,
+      selectedSize: String(selectedSize), // Ensures selectedSize is a string, as per CartItem interface
     };
 
-    // 3. --- Show the toast ---
+    // Call the Zustand action to add the item to the cart
+    addItemToCartStore(cartItemToAdd);
+    console.log(`Added to cart via Zustand:`, cartItemToAdd);
+
+    // Prepare item data for the toast
+    // Uses data from cartItemToAdd for consistency, but currentImage for visual
+    const itemForToast: CartAdditionItem = {
+      name: cartItemToAdd.name,
+      price: cartItemToAdd.price,
+      imageUrl: currentImage, // Use the visually current image for the toast
+      color: cartItemToAdd.colors?.[0], // Or selected color if you implement that
+      size: cartItemToAdd.selectedSize, // This is now a string
+      // quantity: cartItemToAdd.quantity, // Add if your toast displays quantity
+    };
+
+    // Show the toast
     setToastItem(itemForToast);
 
-  }, [product, quantity, selectedSize, currentImage]); // Add dependencie
+  // const cartItem = {
+  //   id: product.id, // Assuming product has an id
+  //   name: product.name,
+  //   price: product.price,
+  //   imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
+  //   quantity: quantity,
+  //   size: selectedSize,
+  //   // Add other necessary fields for your cart
+  // };
+
+  // addToCart(cartItem); // Call your Zustand action
+  // console.log(`Adding ${quantity} x ${product.name} (Size: ${selectedSize}) to cart via Zustand`, cartItem);
+
+  // // Toast logic
+  // const itemForToast: CartAdditionItem = {
+  //   name: product.name,
+  //   price: product.price,
+  //   imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
+  //   color: product.colors?.[0],
+  //   size: selectedSize,
+  // };
+  // setToastItem(itemForToast);
+
+}, [product, quantity, selectedSize, currentImage, setToastItem]);
+  // const handleAddToCart = useCallback(() => {
+  //   // 1. --- Replace this with your ACTUAL Add to Cart logic ---
+  //   console.log(`Adding ${quantity} x ${product.name} (Size: ${selectedSize}) to cart`);
+  //   // Example: addToCartContext({ productId: product.id, quantity, size: selectedSize });
+
+  //   // 2. --- Prepare item data for the toast ---
+  //   const itemForToast: CartAdditionItem = {
+  //     name: product.name,
+  //     price: product.price,
+  //     // Use a relevant image, maybe the current main one or first thumbnail
+  //     imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
+  //     color: product.colors?.[0], // Add color if available/selected
+  //     size: selectedSize,
+  //   };
+
+  //   // 3. --- Show the toast ---
+  //   setToastItem(itemForToast);
+
+  // }, [product, quantity, selectedSize, currentImage]); // Add dependencie
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
@@ -85,7 +148,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
         {/* Order adjusted for mobile: Main image first, then thumbnails */}
         <div className="lg:w-1/2 flex flex-col gap-4">
           {/* Main Image */}
-          <div className="relative aspect-[3/4] w-full bg-gray-100 rounded overflow-hidden shadow-sm">
+          <div className="relative  w-full bg-gray-100 rounded overflow-hidden shadow-sm aspect-[3/4] lg:aspect-auto lg:h-full lg:flex-grow">
             <Image
               src={getStrapiMedia(currentImage)}
               alt={product.name}

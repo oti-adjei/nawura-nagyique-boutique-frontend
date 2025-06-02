@@ -1,6 +1,7 @@
 "use client";
 import { CartItem, useCartStore } from "@/store/cart/useCart";
 import Image from "next/image";
+import { getStrapiMedia } from '@/lib/utils';
 
 // interface CartItemProps {
 //   item: {
@@ -47,7 +48,7 @@ export function CartItemm({ item }: CartItemProps) {
       <div className="flex items-center gap-4 md:col-span-2 w-full">
         <div className="relative w-24 h-24">
           <Image
-            src={item.imageUrl}
+            src={getStrapiMedia(item.imageUrl)}
             alt={item.name}
             fill
             className="object-cover rounded"

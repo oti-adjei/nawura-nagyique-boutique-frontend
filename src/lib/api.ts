@@ -391,7 +391,7 @@ export async function getProducts() {
       return null; // Or handle this case as needed
     }
 
-    return data; // Return the entire data object since your content is directly under 'data'
+    return attributes; // Return the entire data object since your content is directly under 'data'
 
   } catch (error) {
     console.error("Error fetching Product/Shop content:", error);
@@ -417,25 +417,25 @@ export async function getProducts() {
 
 // --- Define Dummy Data ---
 // id: 'dummy-prod-123',
-const DUMMY_PRODUCT: Product = {
-  id: 123,
-  name: 'Dummy Grey Joggers (Offline)',
-  imageUrl: '/placeholder-jogger-main.jpg', // Use placeholders
-  thumbnails: [
-    '/placeholder-jogger-thumb1.jpg',
-    '/placeholder-jogger-thumb2.jpg',
-    '/placeholder-jogger-thumb3.jpg',
-  ],
-  rating: 4.2,
-  reviewCount: 99,
-  price: 199.99,
-  originalPrice: 250.00,
-  colors: ['Grey', 'Black'],
-  sizes: [6, 8, 10, 12, 14, 16],
-  description: "This is dummy data for viewing the product page layout while the API is unavailable.",
-  slug: '/tee'
-  // Add any other fields your ProductDisplay expects
-};
+// const DUMMY_PRODUCT: Product = {
+//   id: 123,
+//   name: 'Dummy Grey Joggers (Offline)',
+//   imageUrl: '/placeholder-jogger-main.jpg', // Use placeholders
+//   thumbnails: [
+//     '/placeholder-jogger-thumb1.jpg',
+//     '/placeholder-jogger-thumb2.jpg',
+//     '/placeholder-jogger-thumb3.jpg',
+//   ],
+//   rating: 4.2,
+//   reviewCount: 99,
+//   price: 199.99,
+//   originalPrice: 250.00,
+//   colors: ['Grey', 'Black'],
+//   sizes: [6, 8, 10, 12, 14, 16],
+//   description: "This is dummy data for viewing the product page layout while the API is unavailable.",
+//   slug: '/tee'
+//   // Add any other fields your ProductDisplay expects
+// };
 
 // --- Your Fetch Function ---
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -453,7 +453,9 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       return null; // Or handle this case as needed
     }
 
-    return data; // Return the entire data object since your content is directly under 'data'
+    console.log("API slug  is " + JSON.stringify(attributes));
+
+    return attributes; // Return the entire data object since your content is directly under 'data'
   } catch (error) {
     console.error("Error fetching Product content:", error);
     throw error; // Re-throw the error for the calling component to handle
@@ -518,15 +520,15 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 // --- Define a larger pool of potential related products (Dummy Data) ---
 const DUMMY_ALL_PRODUCTS: Product[] = [
-  // Add more diverse products here, including the ones used elsewhere if needed
-  { id: 'prod101', name: 'Classic Blue Jeans', price: 75.00, imageUrl: '/products/jeans-1.jpg', rating: 4.6, reviewCount: 150, slug: '/tee' },
-  { id: 'prod102', name: 'Summer Floral Dress', price: 90.00, imageUrl: '/products/dress-1.jpg', rating: 4.8, reviewCount: 88, slug: '/tee' },
-  { id: 'prod456', name: 'Grey Acid Wash Wide Leg Jogger', price: 215.00, imageUrl: '/placeholder-jogger-main.jpg', rating: 4.5, reviewCount: 212, slug: '/tee' }, // Current product example
-  { id: 'prod201', name: 'Leather Biker Jacket', price: 350.00, imageUrl: '/products/jacket-1.jpg', rating: 4.9, reviewCount: 210, slug: '/tee' },
-  { id: 'prod202', name: 'Plain White Tee', price: 25.00, imageUrl: '/products/tee-1.jpg', rating: 4.3, reviewCount: 300, slug: '/tee' },
-  { id: 'prod301', name: 'Running Sneakers V2', price: 140.00, imageUrl: '/products/sneaker-1.jpg', rating: 4.7, reviewCount: 180, slug: '/tee' },
-  { id: 'prod302', name: 'Stylish Ankle Boots', price: 180.00, imageUrl: '/products/boots-1.jpg', rating: 4.5, reviewCount: 95, slug: '/tee' },
-  { id: 'prod501', name: 'Cozy Knit Cardigan', price: 110.00, imageUrl: '/products/cardigan-1.jpg', rating: 4.6, reviewCount: 120, slug: '/tee' },
+  // Add mo e diverse products here, including the ones used elsewhere if needed
+  { id: 101 , name: 'Classic Blue Jeans', price: 75.00, imageUrl: '/products/jeans-1.jpg', rating: 4.6, reviewCount: 150, slug: '/tee' },
+  { id: 102 , name: 'Summer Floral Dress', price: 90.00, imageUrl: '/products/dress-1.jpg', rating: 4.8, reviewCount: 88, slug: '/tee' },
+  { id: 456 , name: 'Grey Acid Wash Wide Leg Jogger', price: 215.00, imageUrl: '/placeholder-jogger-main.jpg', rating: 4.5, reviewCount: 212, slug: '/tee' }, // Current product example
+  { id: 201 , name: 'Leather Biker Jacket', price: 350.00, imageUrl: '/products/jacket-1.jpg', rating: 4.9, reviewCount: 210, slug: '/tee' },
+  { id: 202 , name: 'Plain White Tee', price: 25.00, imageUrl: '/products/tee-1.jpg', rating: 4.3, reviewCount: 300, slug: '/tee' },
+  { id: 301 , name: 'Running Sneakers V2', price: 140.00, imageUrl: '/products/sneaker-1.jpg', rating: 4.7, reviewCount: 180, slug: '/tee' },
+  { id: 302 , name: 'Stylish Ankle Boots', price: 180.00, imageUrl: '/products/boots-1.jpg', rating: 4.5, reviewCount: 95, slug: '/tee' },
+  { id: 501 , name: 'Cozy Knit Cardigan', price: 110.00, imageUrl: '/products/cardigan-1.jpg', rating: 4.6, reviewCount: 120, slug: '/tee' },
 ];
 
 // --- Function to get related products ---

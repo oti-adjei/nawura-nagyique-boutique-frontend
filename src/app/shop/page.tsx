@@ -15,7 +15,7 @@ export default async function ShopPage() {
   //   outOfStock: item.stock <= 0,
   //   slug: item.slug,
   // }));
-    const products = productRes.data.map((item: any) => ({
+    const products = productRes.map((item: any) => ({
     id: item.id,
     name: item.title,
     price: item.price,

@@ -1,3 +1,5 @@
+import { Product } from "./product";
+
 export interface Category {
   id: number;
   name: string;
@@ -62,22 +64,22 @@ interface Size {
   inStock: boolean;
 }
 
-interface Product {
-  id: number;
-  documentId: string;
-  title: string;
-  description: string;
-  price: number;
-  availableColors?: Color[];
-  sizes?: Size[];
-  stock: number;
-  isFeatured: boolean;
-  createdAt: string;
-  updatedAt: string;
-  publishedAt: string;
-  locale: string;
-  slug: string;
-}
+// interface Product {
+//   id: number;
+//   documentId: string;
+//   title: string;
+//   description: string;
+//   price: number;
+//   availableColors?: Color[];
+//   sizes?: Size[];
+//   stock: number;
+//   isFeatured: boolean;
+//   createdAt: string;
+//   updatedAt: string;
+//   publishedAt: string;
+//   locale: string;
+//   slug: string;
+// }
 
 interface SEOMetadata {
   id: number;
@@ -124,7 +126,7 @@ interface HomepageResponse {
 export type {
   Color,
   Size,
-  Product,
+  // Product,
   SEOMetadata,
   HeroSectionData,
   OverviewSectionData,

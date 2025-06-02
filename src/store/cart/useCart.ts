@@ -1,10 +1,10 @@
 'use client';
 
-import { Product } from '@/types/product';
+import { DisplayProduct } from '@/types/product';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-export interface CartItem extends Product {
+export interface CartItem extends DisplayProduct {
   quantity: number;
   selectedSize: string;
 }

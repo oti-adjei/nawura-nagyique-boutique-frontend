@@ -4,7 +4,7 @@
 import { useState, useEffect, Fragment } from 'react';
 import type { CartAdditionItem } from '@/types/cart'; // Use the specific type
 import Image from 'next/image';
-
+import { getStrapiMedia } from '@/lib/utils';
 import { CiCircleCheck } from 'react-icons/ci';
 import { HiMiniXMark } from "react-icons/hi2";
 import Link from 'next/link';
@@ -103,7 +103,7 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
               <div className="relative w-16 h-20 flex-shrink-0 bg-gray-100 dark:bg-gray-700 rounded overflow-hidden">
                 {item.imageUrl ? (
                   <Image
-                    src={item.imageUrl}
+                    src={getStrapiMedia(item.imageUrl)}
                     alt={item.name}
                     fill
                     className="object-cover"
