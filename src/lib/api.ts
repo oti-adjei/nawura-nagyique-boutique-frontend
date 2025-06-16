@@ -139,7 +139,7 @@ export async function getNewArrivals(): Promise<Product[]> {
   console.log("Fetching New Arrivals...");
 
    try {
-    const data = await fetchStrapi('products?populate=*&sort=publishedAt:desc');
+    const data = await fetchStrapi('products?populate=*&sort=publishedAt:desc&pagination[limit]=5');
     console.log("API hitting about is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure

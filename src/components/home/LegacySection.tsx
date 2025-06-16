@@ -28,6 +28,7 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
               fill
               className="object-cover rounded-xl"
               priority
+              objectFit='contain'
             />
           ) : (
             <div className="w-full h-full bg-gray-300 rounded-xl"></div>

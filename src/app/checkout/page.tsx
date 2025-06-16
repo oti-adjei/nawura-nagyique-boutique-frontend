@@ -26,7 +26,6 @@ export default async function CheckoutPage() {
 
     return (
         <div className="bg-gray-50 dark:bg-gray-900 min-h-screen">
-            <Header/>
             <div className="container mx-auto px-4 py-8 lg:py-12">
                 {/* Breadcrumbs - Simple static version */}
                 <nav aria-label="Breadcrumb" className="mb-6 text-sm text-gray-500 dark:text-gray-400">
@@ -44,7 +43,6 @@ export default async function CheckoutPage() {
                 {/* Pass server-fetched data to the Client Component */}
                 <CheckoutClient initialShippingCost={shippingCost} />
             </div>
-            <Footer/>
         </div>
     );
 }

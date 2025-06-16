@@ -20,6 +20,8 @@ interface CheckoutClientProps {
   initialShippingCost: number;
 }
 
+// You might want to define types for Country, State, City for better type safety
+// based on what country-state-city returns, e.g.:
 interface GeoEntity {
   isoCode: string;
   name: string;
@@ -56,6 +58,12 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const [discountCode, setDiscountCode] = useState('');
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [shippingCost, setShippingCost] = useState(initialShippingCost);
+  // const [countries, setCountries] = useState(Country.getAllCountries());
+  // const [states, setStates] = useState([]);
+  // const [cities, setCities] = useState([]);
+
+  // const [selectedCountry, setSelectedCountry] = useState(null);
+  // const [selectedState, setSelectedState] = useState(null);
 
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
@@ -91,12 +99,9 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     }
   }, [selectedPaymentMethod, cartItemsFromStore]);
 
-  const [countries, setCountries] = useState<SelectOption[]>([]);
-  const [states, setStates] = useState<SelectOption[]>([]);
-  const [cities, setCities] = useState<SelectOption[]>([]);
-  // const [countries, setCountries] = useState<CountryEntity[]>(CountryService.getAllCountries() as CountryEntity[]);
-  // const [states, setStates] = useState<StateEntity[]>([]);
-  // const [cities, setCities] = useState<CityEntity[]>([]);
+  const [countries, setCountries] = useState<CountryEntity[]>(CountryService.getAllCountries() as CountryEntity[]);
+  const [states, setStates] = useState<StateEntity[]>([]);
+  const [cities, setCities] = useState<CityEntity[]>([]);
 
   const [selectedCountry, setSelectedCountry] = useState<CountryEntity | null>(null);
   const [selectedState, setSelectedState] = useState<StateEntity | null>(null);
@@ -113,8 +118,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   // Fetch States when Country changes
   useEffect(() => {
-    if (formData.country) {
-      const fetchedStates = StateService.getStatesOfCountry(formData.country).map((s: IState) => ({
+    if (formData.selectedCountryValue) {
+      const fetchedStates = StateService.getStatesOfCountry(formData.selectedCountryValue).map((s: IState) => ({
         label: s.name,
         value: s.isoCode,
         originalData: s,
@@ -135,18 +140,15 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
 
   // Fetch Cities when State changes
- // Fetch Cities when State changes
   useEffect(() => {
-    // FIX: Use formData.selectedCountryValue and formData.selectedStateValue
-    if (formData.state && formData.country) {
+    if (formData.selectedStateValue && formData.selectedCountryValue) {
       const fetchedCities = CityService.getCitiesOfState(
-        formData.country, // Use country
-        formData.state   // Use selectedStateValue
+        formData.selectedCountryValue,
+        formData.selectedStateValue
       ).map((c: ICity) => ({
         label: c.name,
-        // FIX: Create a composite key for 'value' as 'id' does not exist on ICity
-        value: `${c.name}-${c.stateCode}-${c.countryCode}`,
-        originalData: c, // Keep original data if needed
+        value: c.id.toString(), // Use city ID as value for uniqueness
+        originalData: c,
       }));
       setCities(fetchedCities);
       // Reset city if state changes
@@ -158,20 +160,44 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     } else {
       setCities([]); // Clear cities if no state/country is selected
     }
-    // FIX: Update dependency array to match the formData properties used
   }, [formData.state, formData.country]);
 
+
+
+  // const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+  //     const countryIsoCode = event.target.value;
+  //     const foundCountry = countries.find((c) => c.isoCode === countryIsoCode);
+  //     setSelectedCountry(foundCountry || null); // Ensure null if not found
+  //     if (foundCountry) {
+  //         setStates(State.getStatesOfCountry(foundCountry.isoCode) as StateEntity[]);
+  //         setCities([]); // Clear cities when country changes
+  //         setSelectedState(null); // Reset selected state
+  //     } else {
+  //         setStates([]);
+  //         setCities([]);
+  //         setSelectedState(null);
+  //     }
+  // };
+
+  // This is the CORRECT callback function for CountrySelectCombobox
+  // const handleCountrySelection = (country: SelectOption | null) => {
+  //   setFormData(prevData => ({
+  //     ...prevData,
+  //     selectedCountryIsoCode: country ? country.isoCode : '',
+  //     selectedCountryName: country ? country.name : '',
+  //   }));
+  // };
 
   const handleCountrySelect = (option: SelectOption | null) => {
     setFormData(prevData => ({
       ...prevData,
-      country: option ? option.value : '',
-      // selectedCountryLabel: option ? option.label : '',
+      selectedCountryValue: option ? option.value : '',
+      selectedCountryLabel: option ? option.label : '',
       // Clear dependent fields
-      state: '',
-      // selectedStateLabel: '',
-      city: '',
-      // selectedCityLabel: '',
+      selectedStateValue: '',
+      selectedStateLabel: '',
+      selectedCityValue: '',
+      selectedCityLabel: '',
     }));
   };
 
@@ -179,20 +205,32 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const handleStateSelect = (option: SelectOption | null) => {
     setFormData(prevData => ({
       ...prevData,
-      state: option ? option.value : '',
-      // selectedStateLabel: option ? option.label : '',
+      selectedStateValue: option ? option.value : '',
+      selectedStateLabel: option ? option.label : '',
       // Clear dependent field
-      city: '',
-      // selectedCityLabel: '',
+      selectedCityValue: '',
+      selectedCityLabel: '',
     }));
   };
 
   const handleCitySelect = (option: SelectOption | null) => {
     setFormData(prevData => ({
       ...prevData,
-      city: option ? option.value : '',
-      // selectedCityLabel: option ? option.label : '',
+      selectedCityValue: option ? option.value : '',
+      selectedCityLabel: option ? option.label : '',
     }));
+  };
+
+  const handleStateChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const stateIsoCode = event.target.value;
+    const foundState = states.find((s) => s.isoCode === stateIsoCode);
+    setSelectedState(foundState || null);
+    if (selectedCountry && foundState) {
+      // No error now because CityEntity doesn't require isoCode
+      setCities(City.getCitiesOfState(selectedCountry.isoCode, foundState.isoCode) as unknown as CityEntity[]);
+    } else {
+      setCities([]);
+    }
   };
 
 
@@ -309,8 +347,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                 <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
                 <SelectCombobox
                   options={countries} // Pass your full list of countries here
-                  onOptionSelect={handleCountrySelect} // The callback to get selected data
-                  initialSelectedValue={formData.country} // For pre-filling if editing
+                  onCountrySelect={handleCountrySelection} // The callback to get selected data
+                  initialValue={formData.country} // For pre-filling if editing
                   label="Select your Country"
                   placeholder="Search for a country..."
                 />
@@ -331,7 +369,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                 {/* <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="..."> Options </select> */}
               </div>
 
-              {formData.country && ( // Only show states if a country is selected
+              {formData.selectedCountryValue && ( // Only show states if a country is selected
           <div className="mb-6">
             <SelectCombobox
               id="state-select"
@@ -339,12 +377,12 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               placeholder="Search for a state..."
               options={states}
               onOptionSelect={handleStateSelect}
-              initialSelectedValue={formData.state}
+              initialSelectedValue={formData.selectedStateValue}
             />
           </div>
         )}
 
-        {formData.state && ( // Only show cities if a state is selected
+        {formData.selectedStateValue && ( // Only show cities if a state is selected
           <div className="mb-6">
             <SelectCombobox
               id="city-select"
@@ -352,7 +390,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               placeholder="Search for a city..."
               options={cities}
               onOptionSelect={handleCitySelect}
-              initialSelectedValue={formData.city}
+              initialSelectedValue={formData.selectedCityValue}
             />
           </div>
         )}

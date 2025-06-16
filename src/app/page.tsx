@@ -57,6 +57,7 @@ export default async function Home() {
   return (
     <main className="w-full overflow-x-hidden bg-white dark:bg-gray-200 ">
       {hero && <HeroSection hero={hero} />}
+      <div className="px-5 lg:px-[130px]">
       {categories && <Categories categories={categories} />}
       {newArrivals && <NewArrivals currentArrivals={newArrivals} />}
       {overview && <LegacySection legacyContent={overview} />}
@@ -64,7 +65,7 @@ export default async function Home() {
       {promo && <PromoBanner promoBanner={promo} />}
       {collections && <Collections collections={collections} />}
       {features && <Features features={features} />}
-
+      </div>
     </main>
   );
 }

@@ -55,6 +55,10 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
   const handleDecreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
 
 
+  const addToCartFunction = () => {
+    console.log("I HAVE BEEN ADDED TO CART")
+  }
+
   // --- ADD THIS: handleAddToCart function ---
   const handleAddToCart = useCallback(() => {
   console.log("handleAddToCart FIRED!");
@@ -296,11 +300,11 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
               <button
                 type="button"
                 onClick={handleAddToCart}
-                className="flex w-full sm:w-auto flex-1 items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-2.5 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                className="cursor-pointer flex w-full sm:w-auto flex-1 items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-2.5 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
               >
 
                 <FaShoppingCart className="mr-2 h-5 w-5" aria-hidden="true" />
-                Add to Cart
+                Add to Cartttt
               </button>
             </div>
 
@@ -314,7 +318,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
             {/* Payment Methods */}
             <div className="mt-6">
               <h4 className="text-sm font-medium text-gray-900">Payment method</h4>
-              <div className="mt-2 flex items-center space-x-3 sm:space-x-4">
+              <div className="mt-2 relative flex items-center space-x-3 sm:space-x-4">
                 {/* Using simple img tags for payment icons as svgs/react-icons might not match exactly */}
                 <Image src={getStrapiMedia("/visa-logo.svg")} alt="Visa" fill className="h-6 sm:h-7 border border-gray-300 rounded p-0.5" />
                 <Image src="/mastercard-logo.svg" alt="Mastercard" fill className="h-6 sm:h-7 border border-gray-300 rounded p-0.5" />

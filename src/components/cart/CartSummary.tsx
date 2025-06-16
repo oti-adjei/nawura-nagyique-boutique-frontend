@@ -21,7 +21,7 @@ export function CartSummary({ total }: CartSummaryProps) {
             <span className="text-xl font-bold">{total.toFixed(2)} €</span>
             <button
               onClick={() => router.push('/checkout')}
-              className="bg-primary text-white px-6 py-3 rounded"
+              className="bg-primary  px-6 py-3 rounded"
             >
               Check Out
             </button>

@@ -22,8 +22,9 @@ const Collections = ({ collections }: CollectionsProps) => (
                 src={getStrapiMedia(col.image)}
                 alt={col.title || 'Collection image'}
                 fill
-                className="object-contain"
-                sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 30vw"
+                objectFit="cover"
+                objectPosition="left top"
+                // sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 30vw"
               />
             // Fallback if using standard img tag:
             // <img src={col.image} alt={col.title} className="w-full h-full object-cover rounded" />

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
     AiOutlineSearch,
     AiOutlineUser,
@@ -32,6 +32,15 @@ const Header = () => {
         setLocation(newLocation);
         setShowPopup(false);
     };
+
+    // New state to track if component has mounted on the client
+    const [hasMounted, setHasMounted] = useState(false);
+ 
+    // Set hasMounted to true after the component mounts on the client
+    useEffect(() => {
+        setHasMounted(true);
+    }, []);
+
 
     
 
@@ -112,7 +121,8 @@ const Header = () => {
                             <AiOutlineShoppingCart className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
                         </Link>
 
-                        {itemCount > 0 && (
+                        {/* FIX: Only render the span if hasMounted is true */}
+                        {hasMounted && itemCount > 0 && (
                             <span className="absolute top-[-6px] right-[-6px] bg-red-500 text-white text-xs rounded-full px-1">
                                 {itemCount}
                             </span>
