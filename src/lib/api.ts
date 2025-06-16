@@ -8,7 +8,7 @@ import type {
   // HeroContent // Assuming HeroContent is defined
 } from '@/types/api'; // Adjust path as needed
 
-import type { Product } from '@/types/product';
+import type { Product, ProductImage } from '@/types/product';
 import fetchStrapi from './utils';
 
 
@@ -137,51 +137,25 @@ export async function getCategories(): Promise<Category[]> {
 
 export async function getNewArrivals(): Promise<Product[]> {
   console.log("Fetching New Arrivals...");
-  /*
-  // UNCOMMENT THIS BLOCK TO FETCH FROM STRAPI
-  if (!STRAPI_URL) throw new Error("Strapi URL not configured.");
-  const endpoint = `${STRAPI_URL}/products?sort=createdAt:desc&pagination[limit]=12&populate=image`;
- 
-  try {
-    const res = await fetch(endpoint); // Add headers if auth needed
-    if (!res.ok) throw new Error(`Failed to fetch new arrivals: ${res.statusText}`);
-    const data = await res.json();
- 
-    if (!data.data || !Array.isArray(data.data)) {
-      throw new Error("New Arrivals data received from Strapi is not in expected format.");
+
+   try {
+    const data = await fetchStrapi('products?populate=*&sort=publishedAt:desc');
+    console.log("API hitting about is " + JSON.stringify(data));
+
+    const attributes = data?.data; // Adjusted based on your previous response structure
+
+    if (!attributes) {
+      console.warn("Homepage content data received from Strapi is not in the expected format.");
+      return []; // Or handle this case as needed
     }
- 
-    return data.data.map((item: any): Product => ({
-      id: item.id,
-      title: item.attributes.title,
-      price: item.attributes.price,
-      originalPrice: item.attributes.originalPrice,
-      image: item.attributes.image?.data?.attributes?.url || `/placeholder-product.jpg`,
-    }));
+
+    return attributes; // Return the entire data object since your content is directly under 'data'
   } catch (error) {
-    console.error("Error fetching new arrivals:", error);
-    throw error; // Re-throw error or handle differently
+    console.error("Error fetching homepage content:", error);
+    throw error; // Re-throw the error for the calling component to handle
   }
-  */
 
-  // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
-  // return Array.from({ length: 12 }).map((_, i) => ({
-  //     id: i + 100, // Assign dummy IDs
-  //     image: `/products/new-${(i % 4) + 1}.jpg`,
-  //     title: `New Arrival Product ${i + 1}`,
-  //     price: 87.0 + i,
-  //     originalPrice: 100.0 + i,
-  // }));
-
-  return [
-    { id: 101, imageUrl: '/products/new-1.jpg', name: 'Stylish Printed Shirt', price: 87.0, originalPrice: 100.0, slug: '/tee' },
-    { id: 102, imageUrl: '/products/new-2.jpg', name: 'Comfort Fit Jeans', price: 95.0, originalPrice: 120.0, slug: '/tee' },
-    { id: 103, imageUrl: '/products/new-3.jpg', name: 'Casual Summer Dress', price: 75.5, originalPrice: 90.0, slug: '/tee' },
-    { id: 104, imageUrl: '/products/new-4.jpg', name: 'Leather Crossbody Bag', price: 110.0, slug: '/tee' }, // No originalPrice example
-    { id: 105, imageUrl: '/products/new-1.jpg', name: 'Graphic Tee Unisex', price: 45.0, originalPrice: 55.0, slug: '/tee' },
-    { id: 106, imageUrl: '/products/new-2.jpg', name: 'Running Sneakers', price: 130.0, originalPrice: 150.0, slug: '/tee' },
-    // Add more explicit items if needed, up to 12 for the example
-  ];
+  
 }
 
 
@@ -222,52 +196,24 @@ export async function getNewArrivals(): Promise<Product[]> {
 // }
 
 
-export async function getDeals(): Promise<DealProduct[]> {
-  console.log("Fetching Deals...");
-  /*
-  // UNCOMMENT THIS BLOCK TO FETCH FROM STRAPI
-  if (!STRAPI_URL) throw new Error("Strapi URL not configured.");
-  const endpoint = `${STRAPI_URL}/products?filters[isDeal][$eq]=true&pagination[limit]=6&populate=image`;
- 
-  try {
-    const res = await fetch(endpoint); // Add headers if auth needed
-    if (!res.ok) throw new Error(`Failed to fetch deals: ${res.statusText}`);
-    const data = await res.json();
- 
-    if (!data.data || !Array.isArray(data.data)) {
-      throw new Error("Deals data received from Strapi is not in expected format.");
+export async function getDeals() {
+   try {
+   const data = await fetchStrapi('products?filters[isFeatured][$eq]=true&populate=*');
+    console.log("API hitting about is " + JSON.stringify(data));
+
+    const attributes = data?.data; // Adjusted based on your previous response structure
+
+    if (!attributes) {
+      console.warn("Homepage content data received from Strapi is not in the expected format.");
+      return null; // Or handle this case as needed
     }
- 
-    return data.data.map((item: any): Product => ({
-      id: item.id,
-      title: item.attributes.title,
-      price: item.attributes.price,
-      originalPrice: item.attributes.originalPrice,
-      image: item.attributes.image?.data?.attributes?.url || `/placeholder-deal.jpg`,
-    }));
+
+    return attributes; // Return the entire data object since your content is directly under 'data'
+
   } catch (error) {
-    console.error("Error fetching deals:", error);
-    throw error; // Re-throw error or handle differently
+    console.error("Error fetching Product/Shop content:", error);
+    throw error; // Re-throw the error for the calling component to handle
   }
-  */
-
-  // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
-  // return Array.from({ length: 6 }).map((_, i) => ({
-  //     id: i + 200, // Assign dummy IDs
-  //     image: `/products/deal-${(i % 3) + 1}.jpg`,
-  //     title: `Amazing Deal ${i + 1}`,
-  //     price: 50.0 + i,
-  //     originalPrice: 90.0 + i,
-  // }));
-
-  return [
-    { id: 201, imageUrl: '/products/deal-1.jpg', name: 'Deal Sneaker Max', price: 50.0, originalPrice: 90.0 },
-    { id: 202, imageUrl: '/products/deal-2.jpg', name: 'Weekend Hoodie Deal', price: 55.0, originalPrice: 95.0 },
-    { id: 203, imageUrl: '/products/deal-3.jpg', name: 'Watch Special Offer', price: 60.0, originalPrice: 100.0 },
-    { id: 204, imageUrl: '/products/deal-1.jpg', name: 'Sunglasses Discount', price: 52.0, originalPrice: 88.0 },
-    { id: 205, imageUrl: '/products/deal-2.jpg', name: 'Backpack Bargain', price: 58.0, originalPrice: 99.0 },
-    { id: 206, imageUrl: '/products/deal-3.jpg', name: 'Limited Cap Sale', price: 48.0, originalPrice: 80.0 },
-  ];
 }
 
 
@@ -335,7 +281,7 @@ export async function getCollections(): Promise<Collection[]> {
 
   // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
   return [
-    { id: 301, title: "Women’s Collection", image: '/collections/women.jpg' },
+    { id: 301, title: "Women’s Collection", image: '/uploads/women_fe7af95179.png' },
     { id: 302, title: "Kid’s Collection", image: '/collections/kids.jpg' },
     { id: 303, title: "Men’s Collection", image: '/collections/men.jpg' },
   ];
@@ -519,16 +465,197 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
 
 
 // --- Define a larger pool of potential related products (Dummy Data) ---
+const createDummyProductImage = (
+  id: number,
+  url: string,
+  name: string = 'product-image',
+  width: number = 600,
+  height: number = 800
+): ProductImage => ({
+  id: id,
+  documentId: `doc-${id}`,
+  name: name,
+  alternativeText: null,
+  caption: null,
+  width: width,
+  height: height,
+  formats: {
+    thumbnail: {
+      name: `thumbnail-${name}`,
+      hash: `thumb-hash-${id}`,
+      ext: '.jpg',
+      mime: 'image/jpeg',
+      path: null,
+      width: 150,
+      height: 200,
+      size: 10,
+      sizeInBytes: 10240,
+      url: `/thumbnails/${url.split('/').pop()}`,
+    },
+    small: {
+      name: `small-${name}`,
+      hash: `small-hash-${id}`,
+      ext: '.jpg',
+      mime: 'image/jpeg',
+      path: null,
+      width: 300,
+      height: 400,
+      size: 50,
+      sizeInBytes: 51200,
+      url: `/small/${url.split('/').pop()}`,
+    },
+  },
+  hash: `full-hash-${id}`,
+  ext: '.jpg',
+  mime: 'image/jpeg',
+  size: 200,
+  url: url,
+  previewUrl: null,
+  provider: 'local',
+  provider_metadata: null,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
+  publishedAt: new Date().toISOString(),
+});
+
+
 const DUMMY_ALL_PRODUCTS: Product[] = [
-  // Add mo e diverse products here, including the ones used elsewhere if needed
-  { id: 101 , name: 'Classic Blue Jeans', price: 75.00, imageUrl: '/products/jeans-1.jpg', rating: 4.6, reviewCount: 150, slug: '/tee' },
-  { id: 102 , name: 'Summer Floral Dress', price: 90.00, imageUrl: '/products/dress-1.jpg', rating: 4.8, reviewCount: 88, slug: '/tee' },
-  { id: 456 , name: 'Grey Acid Wash Wide Leg Jogger', price: 215.00, imageUrl: '/placeholder-jogger-main.jpg', rating: 4.5, reviewCount: 212, slug: '/tee' }, // Current product example
-  { id: 201 , name: 'Leather Biker Jacket', price: 350.00, imageUrl: '/products/jacket-1.jpg', rating: 4.9, reviewCount: 210, slug: '/tee' },
-  { id: 202 , name: 'Plain White Tee', price: 25.00, imageUrl: '/products/tee-1.jpg', rating: 4.3, reviewCount: 300, slug: '/tee' },
-  { id: 301 , name: 'Running Sneakers V2', price: 140.00, imageUrl: '/products/sneaker-1.jpg', rating: 4.7, reviewCount: 180, slug: '/tee' },
-  { id: 302 , name: 'Stylish Ankle Boots', price: 180.00, imageUrl: '/products/boots-1.jpg', rating: 4.5, reviewCount: 95, slug: '/tee' },
-  { id: 501 , name: 'Cozy Knit Cardigan', price: 110.00, imageUrl: '/products/cardigan-1.jpg', rating: 4.6, reviewCount: 120, slug: '/tee' },
+  {
+    id: 101,
+    documentId: 'prod-doc-101',
+    title: 'Classic Blue Jeans',
+    description: 'A timeless pair of blue jeans for everyday wear. Made from durable denim with a comfortable fit.',
+    price: 75.00,
+    availableColors: [{ id: 1, name: 'Blue', hexCode: '#0000FF' }],
+    sizes: [{ id: 1, name: 30 }, { id: 2, name: 32 }, { id: 3, name: 34 }],
+    stock: 120,
+    isFeatured: true,
+    createdAt: '2024-01-15T10:00:00Z',
+    updatedAt: '2024-05-20T14:30:00Z',
+    publishedAt: '2024-01-15T10:00:00Z',
+    locale: 'en',
+    slug: 'classic-blue-jeans',
+    images: [createDummyProductImage(1, '/products/jeans-1.jpg', 'Classic Blue Jeans')],
+  },
+  {
+    id: 102,
+    documentId: 'prod-doc-102',
+    title: 'Summer Floral Dress',
+    description: 'Light and airy floral dress, perfect for summer days. Features a flattering silhouette and vibrant print.',
+    price: 90.00,
+    availableColors: [{ id: 2, name: 'Floral', hexCode: '#FF69B4' }],
+    sizes: [{ id: 4, name: 'S' }, { id: 5, name: 'M' }, { id: 6, name: 'L' }],
+    stock: 80,
+    isFeatured: true,
+    createdAt: '2024-02-01T11:00:00Z',
+    updatedAt: '2024-05-22T10:00:00Z',
+    publishedAt: '2024-02-01T11:00:00Z',
+    locale: 'en',
+    slug: 'summer-floral-dress',
+    images: [createDummyProductImage(2, '/products/dress-1.jpg', 'Summer Floral Dress')],
+  },
+  {
+    id: 456,
+    documentId: 'prod-doc-456',
+    title: 'Grey Acid Wash Wide Leg Jogger',
+    description: 'Comfortable and stylish wide-leg joggers with a unique acid wash finish. Ideal for casual wear or lounging.',
+    price: 215.00,
+    availableColors: [{ id: 3, name: 'Grey', hexCode: '#808080' }],
+    sizes: [{ id: 7, name: 'XS' }, { id: 8, name: 'S' }, { id: 9, name: 'M' }],
+    stock: 50,
+    isFeatured: true,
+    createdAt: '2024-03-10T09:00:00Z',
+    updatedAt: '2024-06-05T16:00:00Z',
+    publishedAt: '2024-03-10T09:00:00Z',
+    locale: 'en',
+    slug: 'grey-acid-wash-wide-leg-jogger',
+    images: [createDummyProductImage(3, '/placeholder-jogger-main.jpg', 'Grey Acid Wash Jogger')],
+  },
+  {
+    id: 201,
+    documentId: 'prod-doc-201',
+    title: 'Leather Biker Jacket',
+    description: 'Edgy and durable leather biker jacket. A wardrobe staple that adds a cool touch to any outfit.',
+    price: 350.00,
+    availableColors: [{ id: 4, name: 'Black', hexCode: '#000000' }],
+    sizes: [{ id: 10, name: 'S' }, { id: 11, name: 'M' }, { id: 12, name: 'L' }, { id: 13, name: 'XL' }],
+    stock: 30,
+    isFeatured: false,
+    createdAt: '2024-04-01T13:00:00Z',
+    updatedAt: '2024-05-18T09:00:00Z',
+    publishedAt: '2024-04-01T13:00:00Z',
+    locale: 'en',
+    slug: 'leather-biker-jacket',
+    images: [createDummyProductImage(4, '/products/jacket-1.jpg', 'Leather Biker Jacket')],
+  },
+  {
+    id: 202,
+    documentId: 'prod-doc-202',
+    title: 'Plain White Tee',
+    description: 'A comfortable and versatile plain white t-shirt. A must-have for any minimalist wardrobe.',
+    price: 25.00,
+    availableColors: [{ id: 5, name: 'White', hexCode: '#FFFFFF' }],
+    sizes: [{ id: 14, name: 'XS' }, { id: 15, name: 'S' }, { id: 16, name: 'M' }, { id: 17, name: 'L' }, { id: 18, name: 'XL' }],
+    stock: 500,
+    isFeatured: false,
+    createdAt: '2024-01-05T08:00:00Z',
+    updatedAt: '2024-06-01T11:00:00Z',
+    publishedAt: '2024-01-05T08:00:00Z',
+    locale: 'en',
+    slug: 'plain-white-tee',
+    images: [createDummyProductImage(5, '/products/tee-1.jpg', 'Plain White Tee')],
+  },
+  {
+    id: 301,
+    documentId: 'prod-doc-301',
+    title: 'Running Sneakers V2',
+    description: 'Advanced running sneakers designed for optimal performance and comfort. Perfect for athletes.',
+    price: 140.00,
+    availableColors: [{ id: 6, name: 'Black/Red', hexCode: '#000000' }, { id: 7, name: 'Blue/White', hexCode: '#0000FF' }],
+    sizes: [{ id: 19, name: 7 }, { id: 20, name: 8 }, { id: 21, name: 9 }, { id: 22, name: 10 }],
+    stock: 90,
+    isFeatured: true,
+    createdAt: '2024-02-15T10:00:00Z',
+    updatedAt: '2024-05-25T15:00:00Z',
+    publishedAt: '2024-02-15T10:00:00Z',
+    locale: 'en',
+    slug: 'running-sneakers-v2',
+    images: [createDummyProductImage(6, '/products/sneaker-1.jpg', 'Running Sneakers V2')],
+  },
+  {
+    id: 302,
+    documentId: 'prod-doc-302',
+    title: 'Stylish Ankle Boots',
+    description: 'Chic and comfortable ankle boots, perfect for adding a touch of sophistication to any outfit.',
+    price: 180.00,
+    availableColors: [{ id: 8, name: 'Brown', hexCode: '#A52A2A' }],
+    sizes: [{ id: 23, name: 6 }, { id: 24, name: 7 }, { id: 25, name: 8 }, { id: 26, name: 9 }],
+    stock: 60,
+    isFeatured: false,
+    createdAt: '2024-03-20T14:00:00Z',
+    updatedAt: '2024-05-30T10:00:00Z',
+    publishedAt: '2024-03-20T14:00:00Z',
+    locale: 'en',
+    slug: 'stylish-ankle-boots',
+    images: [createDummyProductImage(7, '/products/boots-1.jpg', 'Stylish Ankle Boots')],
+  },
+  {
+    id: 501,
+    documentId: 'prod-doc-501',
+    title: 'Cozy Knit Cardigan',
+    description: 'Soft and warm knit cardigan, ideal for layering during cooler months. A comfortable and stylish addition to your wardrobe.',
+    price: 110.00,
+    availableColors: [{ id: 9, name: 'Beige', hexCode: '#F5F5DC' }, { id: 10, name: 'Grey', hexCode: '#808080' }],
+    sizes: [{ id: 27, name: 'S' }, { id: 28, name: 'M' }, { id: 29, name: 'L' }],
+    stock: 70,
+    isFeatured: true,
+    createdAt: '2024-01-25T12:00:00Z',
+    updatedAt: '2024-06-02T16:00:00Z',
+    publishedAt: '2024-01-25T12:00:00Z',
+    locale: 'en',
+    slug: 'cozy-knit-cardigan',
+    images: [createDummyProductImage(8, '/products/cardigan-1.jpg', 'Cozy Knit Cardigan')],
+  },
 ];
 
 // --- Function to get related products ---

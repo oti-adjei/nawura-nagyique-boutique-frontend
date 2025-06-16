@@ -42,7 +42,7 @@ export default async function CheckoutPage() {
                 </nav>
 
                 {/* Pass server-fetched data to the Client Component */}
-                <CheckoutClient initialCartItems={cartItems} initialShippingCost={shippingCost} />
+                <CheckoutClient initialShippingCost={shippingCost} />
             </div>
             <Footer/>
         </div>

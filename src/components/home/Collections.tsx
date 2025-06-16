@@ -1,3 +1,4 @@
+import { getStrapiMedia } from '@/lib/utils';
 import type { Collection } from '@/types/api'; // Adjust import path (ensure this type has 'id')
 import Image from 'next/image'; // Using next/image is recommended
 
@@ -7,19 +8,21 @@ interface CollectionsProps {
 }
 
 const Collections = ({ collections }: CollectionsProps) => (
+
+
+ 
   <section className="py-10 px-4 md:px-10">
     <h2 className="text-xl md:text-2xl font-bold mb-8 text-center">Shop by Collections</h2>
     {/* Adjust grid columns as needed */}
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-      {collections.map((col) => (
-        // Use col.id for the key
-        <div key={col.id} className="relative group aspect-[4/3] rounded overflow-hidden shadow hover:shadow-lg transition">
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 px-12 gap-4 md:gap-6">
+      {collections.map((col) => (        // Use col.id for the key
+        <div key={col.id} className="relative group aspect-[3/2] rounded overflow-hidden shadow hover:shadow-lg transition">
           {col.image ? (
              <Image
-                src={col.image}
+                src={getStrapiMedia(col.image)}
                 alt={col.title || 'Collection image'}
                 fill
-                className="object-cover"
+                className="object-contain"
                 sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 30vw"
               />
             // Fallback if using standard img tag:

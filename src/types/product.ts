@@ -132,12 +132,12 @@ export interface DisplayProduct {
 }
 
 // ---------- Related Product ----------
-export type RelatedProduct = Omit<
-  DisplayProduct,
-  'colors' | 'sizes' | 'thumbnails' | 'description' | 'reviewCount'
-> & {
-  category: string;
-};
+// export type RelatedProduct = Omit<
+//   DisplayProduct,
+//   'colors' | 'sizes' | 'thumbnails' | 'description' | 'reviewCount'
+// > & {
+//   category: string;
+// };
 
 // ---------- Mapping Helper ----------
 export function toDisplayProduct(product: Product): DisplayProduct {

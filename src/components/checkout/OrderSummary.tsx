@@ -13,6 +13,7 @@ interface OrderSummaryProps {
   onDiscountCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onApplyDiscount: () => void;
   // Pay Now button is rendered here, but onSubmit is handled by the parent form
+  isSubmitting:boolean
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -24,6 +25,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   discountCode,
   onDiscountCodeChange,
   onApplyDiscount,
+  isSubmitting
 }) => {
   return (
     <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow sticky top-8"> {/* Sticky positioning */}
@@ -101,10 +103,11 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
 
       {/* Pay Now Button */}
       <button
-        type="submit" // This button submits the parent form
-        className="w-full mt-6 bg-pink-600 text-white py-3 px-4 rounded-md shadow-sm font-semibold hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition"
+        type="submit" // This button submits the parent CheckoutClient form
+        disabled={isSubmitting} // Disable when submitting
+        className="w-full mt-6 bg-pink-600 text-white py-3 px-4 rounded-md shadow-sm font-semibold hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition disabled:opacity-50"
       >
-        Pay Now
+        {isSubmitting ? 'Processing...' : 'Pay Now'}
       </button>
 
       {/* Secure Checkout Info */}

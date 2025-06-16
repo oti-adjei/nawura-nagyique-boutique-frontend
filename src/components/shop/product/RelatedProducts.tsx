@@ -1,17 +1,9 @@
 
 import { getRelatedProducts } from '@/lib/api';
 import ProductCard from '../ProductCard';
-import type { Product, RelatedProduct } from '@/types/product'; // Adjust path if needed
+import { toDisplayProduct, type DisplayProduct, type Product } from '@/types/product'; // Adjust path if needed
 
-// Sample Data (Updated)
-const sampleRelatedProducts: RelatedProduct[] = [
-    { id: 'rp1', name: "Alpaca Wool Cropped Cardigan", category: "Knitwear", imageUrl: "/placeholder-related1.jpg", price: 248, rating: 0 /* not displayed */,slug:"/hi" },
-    { id: 'rp2', name: "Alpaca Wool Cropped Cardigan", category: "Knitwear", imageUrl: "/placeholder-related2.jpg", price: 248, rating: 0 /* not displayed */,slug:"/hi" },
-    { id: 'rp3', name: "Alpaca Wool Cropped Cardigan", category: "Knitwear", imageUrl: "/placeholder-related3.jpg", price: 248, rating: 0 /* not displayed */,slug:"/hi" },
-    { id: 'rp4', name: "Alpaca Wool Cropped Cardigan", category: "Knitwear", imageUrl: "/placeholder-related4.jpg", price: 248, rating: 0 /* not displayed */,slug:"/hi" },
-    // Add a 5th if you want 5 columns on largest screens
-    // { id: 'rp5', name: "Alpaca Wool Cropped Cardigan", category: "Knitwear", imageUrl: "/placeholder-related1.jpg", price: 248, rating: 0 /* not displayed */ },
-];
+
 
 // --- Define Props Interface ---
 interface RelatedProductsProps {
@@ -21,7 +13,10 @@ interface RelatedProductsProps {
 
   export default  async function RelatedProducts({ currentProductId }: RelatedProductsProps) {
     // Fetch related products (will use dummy data for now)
-  const relatedProducts: Product[] = await getRelatedProducts(currentProductId, 5); // Fetch 5 related items
+  const Products: Product[] = await getRelatedProducts(currentProductId, 5); // Fetch 5 related items
+
+  const relatedProducts: DisplayProduct[]= Products.map(product => toDisplayProduct(product));
+
 
   // Handle case with no related products
   if (!relatedProducts || relatedProducts.length === 0) {
