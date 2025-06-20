@@ -343,45 +343,8 @@ export async function getProducts() {
     console.error("Error fetching Product/Shop content:", error);
     throw error; // Re-throw the error for the calling component to handle
   }
-
-
-  // actual format 
-  const res = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/products?populate=*`);
-  const data = await res.json();
-
-  return data.data.map((product: any) => ({
-    id: product.id,
-    name: product.attributes.title,
-    price: product.attributes.price,
-    imageUrl: product.attributes.image?.data?.attributes?.url || '/placeholder.png',
-    inStock: product.attributes.inStock,
-  }));
 }
 
-
-// lib/data.ts (or wherever your fetch function lives)
-
-// --- Define Dummy Data ---
-// id: 'dummy-prod-123',
-// const DUMMY_PRODUCT: Product = {
-//   id: 123,
-//   name: 'Dummy Grey Joggers (Offline)',
-//   imageUrl: '/placeholder-jogger-main.jpg', // Use placeholders
-//   thumbnails: [
-//     '/placeholder-jogger-thumb1.jpg',
-//     '/placeholder-jogger-thumb2.jpg',
-//     '/placeholder-jogger-thumb3.jpg',
-//   ],
-//   rating: 4.2,
-//   reviewCount: 99,
-//   price: 199.99,
-//   originalPrice: 250.00,
-//   colors: ['Grey', 'Black'],
-//   sizes: [6, 8, 10, 12, 14, 16],
-//   description: "This is dummy data for viewing the product page layout while the API is unavailable.",
-//   slug: '/tee'
-//   // Add any other fields your ProductDisplay expects
-// };
 
 // --- Your Fetch Function ---
 export async function getProductBySlug(slug: string): Promise<Product | null> {
@@ -406,60 +369,6 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
     console.error("Error fetching Product content:", error);
     throw error; // Re-throw the error for the calling component to handle
   }
-  /*
-  // --- UNCOMMENT THIS WHEN API IS READY ---
-  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
-  if (!STRAPI_URL) {
-    console.error("Strapi URL not configured.");
-    return null; // Or throw error
-  }
-
-  try {
-    // Example Strapi endpoint - ADJUST AS NEEDED
-    const endpoint = `${STRAPI_URL}/products?filters[slug][$eq]=${slug}&populate=image,thumbnails,colors,sizes`; // Adjust populate as needed
-    const res = await fetch(endpoint); // Add auth headers if needed
-
-    if (!res.ok) {
-      console.error(`Failed to fetch product for slug ${slug}: ${res.statusText}`);
-      return null; // Or throw error
-    }
-
-    const data = await res.json();
-
-    if (!data.data || data.data.length === 0) {
-      console.warn(`No product found for slug: ${slug}`);
-      return null; // Not found
-    }
-
-    // --- Map Strapi data to your Product type ---
-    const item = data.data[0];
-    const attributes = item.attributes;
-    const product: Product = {
-      id: item.id,
-      name: attributes.name,
-      price: attributes.price,
-      originalPrice: attributes.originalPrice,
-      description: attributes.description,
-      // ... map other fields (images, colors, sizes carefully based on Strapi structure)
-       imageUrl: attributes.image?.data?.attributes?.url || '/placeholder-product.jpg',
-       thumbnails: attributes.thumbnails?.data?.map((img: any) => img.attributes?.url) || [],
-       colors: attributes.colors?.map((c: any) => c.name) || [], // Example mapping
-       sizes: attributes.sizes?.map((s: any) => s.value) || [], // Example mapping
-       rating: attributes.rating, // Assuming these exist directly
-       reviewCount: attributes.reviewCount,
-    };
-    return product;
-
-  } catch (error) {
-    console.error(`Error fetching product for slug ${slug}:`, error);
-    return null; // Or throw error
-  }
-  */
-
-  // --- RETURN DUMMY DATA (DELETE/COMMENT OUT WHEN API IS READY) ---
-  // Simulate a small delay like a real fetch might have
-  // await new Promise(resolve => setTimeout(resolve, 50));
-  // return DUMMY_PRODUCT;
 }
 
 
