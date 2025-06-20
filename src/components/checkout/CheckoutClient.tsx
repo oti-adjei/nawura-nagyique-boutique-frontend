@@ -13,27 +13,13 @@ import StripeCheckoutForm, { StripeCheckoutFormHandle } from './StripeCheckoutFo
 import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useCartStore } from '@/store/cart/useCart';
 import SelectCombobox from './CountrySelectCombobox';
+import { PayBill } from './PayBill';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface CheckoutClientProps {
   initialShippingCost: number;
 }
-
-interface GeoEntity {
-  isoCode: string;
-  name: string;
-  // Add other properties if you use them, e.g., 'latitude', 'longitude'
-}
-interface CountryEntity extends GeoEntity {
-  phonecode: string;
-  currency: string;
-  flag: string;
-  timezones: any[]; // Or a more specific type if known
-}
-interface StateEntity extends GeoEntity { }
-interface CityEntity extends GeoEntity { }
-
 const CheckoutClient: React.FC<CheckoutClientProps> = ({
   initialShippingCost
 }) => {
@@ -59,47 +45,20 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
 
   const [clientSecret, setClientSecret] = useState<string | null>(null);
-  const [isStripeLoading, setIsStripeLoading] = useState(false);
-  const [stripeError, setStripeError] = useState<string | null>(null); // For errors initializing Stripe
+  // const [isStripeLoading, setIsStripeLoading] = useState(false);
+  // const [stripeError, setStripeError] = useState<string | null>(null); // For errors initializing Stripe
   const [formSubmissionMessage, setFormSubmissionMessage] = useState<string | null>(null); // For overall form submission status
   const [isSubmitting, setIsSubmitting] = useState(false); // For the main Pay Now button
 
   const stripeFormRef = useRef<StripeCheckoutFormHandle>(null); // Ref for StripeCheckoutForm
 
-  // useEffect for fetching clientSecret (remains the same)
-  useEffect(() => {
-    if (selectedPaymentMethod === 'stripe' && cartItemsFromStore.length > 0) {
-      setIsStripeLoading(true);
-      setStripeError(null);
-      setClientSecret(null);
-      fetch('/api/stripe/create-payment-intent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ items: cartItemsFromStore }),
-      })
-        .then(res => res.ok ? res.json() : res.json().then(data => { throw new Error(data.error || 'Failed to create PI') }))
-        .then(data => data.clientSecret ? setClientSecret(data.clientSecret) : Promise.reject(new Error(data.error || 'Client secret missing')))
-        .catch(err => {
-          console.error("Error fetching client secret:", err);
-          setStripeError(err.message || 'Could not initialize Stripe. Try another method.');
-        })
-        .finally(() => setIsStripeLoading(false));
-    } else {
-      setClientSecret(null);
-      setIsStripeLoading(false);
-      setStripeError(null);
-    }
-  }, [selectedPaymentMethod, cartItemsFromStore]);
 
   const [countries, setCountries] = useState<SelectOption[]>([]);
   const [states, setStates] = useState<SelectOption[]>([]);
   const [cities, setCities] = useState<SelectOption[]>([]);
-  // const [countries, setCountries] = useState<CountryEntity[]>(CountryService.getAllCountries() as CountryEntity[]);
-  // const [states, setStates] = useState<StateEntity[]>([]);
-  // const [cities, setCities] = useState<CityEntity[]>([]);
 
-  const [selectedCountry, setSelectedCountry] = useState<CountryEntity | null>(null);
-  const [selectedState, setSelectedState] = useState<StateEntity | null>(null);
+  const [isPayBillOpen, setIsPayBillOpen] = useState(false);
+
 
   // Fetch Countries on component mount
   useEffect(() => {
@@ -123,18 +82,16 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       // Reset state and city if country changes
       setFormData(prev => ({
         ...prev,
-        selectedStateValue: '',
-        selectedStateLabel: '',
-        selectedCityValue: '',
-        selectedCityLabel: '',
+        // selectedStateValue: '',
+        // selectedStateLabel: '',
+        // selectedCityValue: '',
+        // selectedCityLabel: '',
       }));
     } else {
       setStates([]); // Clear states if no country is selected
     }
   }, [formData.country]);
 
-
-  // Fetch Cities when State changes
   // Fetch Cities when State changes
   useEffect(() => {
     // FIX: Use formData.selectedCountryValue and formData.selectedStateValue
@@ -152,8 +109,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       // Reset city if state changes
       setFormData(prev => ({
         ...prev,
-        selectedCityValue: '',
-        selectedCityLabel: '',
+        // selectedCityValue: '',
+        // selectedCityLabel: '',
       }));
     } else {
       setCities([]); // Clear cities if no state/country is selected
@@ -166,8 +123,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     setFormData(prevData => ({
       ...prevData,
       country: option ? option.value : '',
-      // selectedCountryLabel: option ? option.label : '',
-      // Clear dependent fields
       state: '',
       // selectedStateLabel: '',
       city: '',
@@ -180,8 +135,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     setFormData(prevData => ({
       ...prevData,
       state: option ? option.value : '',
-      // selectedStateLabel: option ? option.label : '',
-      // Clear dependent field
       city: '',
       // selectedCityLabel: '',
     }));
@@ -191,7 +144,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     setFormData(prevData => ({
       ...prevData,
       city: option ? option.value : '',
-      // selectedCityLabel: option ? option.label : '',
     }));
   };
 
@@ -226,7 +178,21 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     setIsSubmitting(true);
     setFormSubmissionMessage(null);
 
-    if (selectedPaymentMethod === 'stripe') {
+    //console log form data
+    console.log("Form Data:", formData);
+
+   if (selectedPaymentMethod === 'stripe') {
+      // Instead of trying to render here...
+      // ...you just update the state.
+      setIsPayBillOpen(true);
+      return; // Stop the rest of the function from running for now
+    } 
+    // finally {
+    //   setIsSubmitting(false); // Reset submitting state after submission
+    // }
+
+
+   /* if (selectedPaymentMethod === 'stripe') {
       if (!stripeFormRef.current) {
         setFormSubmissionMessage("Stripe form is not ready. Please wait.");
         setIsSubmitting(false);
@@ -270,7 +236,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       setFormSubmissionMessage(`Order placed successfully with ${selectedPaymentMethod}!`);
       clearCart(); // Clear cart for non-Stripe successful simulated payments
     }
-    setIsSubmitting(false);
+    setIsSubmitting(false);*/
   };
 
   const subtotal = useMemo(() => cartItemsFromStore.reduce((sum, item) => sum + item.price * item.quantity, 0), [cartItemsFromStore]);
@@ -279,6 +245,11 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const stripeElementsOptions: StripeElementsOptions | undefined = clientSecret ? { clientSecret, appearance: { theme: 'stripe' } } : undefined;
 
   if (cartItemsFromStore.length === 0) { /* ... empty cart message ... */ }
+
+  const handleClosePayBill = useCallback(() => {
+    setIsPayBillOpen(false);
+    setIsSubmitting(false); // Reset isSubmitting when PayBill modal is closed
+  }, []);
 
   return (
     <>
@@ -306,31 +277,15 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                   <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone number</label>
                   <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
                 </div>
-                {/* Using Input for country for simplicity, replace with Select if needed */}
+             
                 <div className="md:col-span-2">
-                  <label htmlFor="country" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Country</label>
                   <SelectCombobox
-                    options={countries} // Pass your full list of countries here
-                    onOptionSelect={handleCountrySelect} // The callback to get selected data
-                    initialSelectedValue={formData.country} // For pre-filling if editing
-                    label="Select your Country"
+                    options={countries} 
+                    onOptionSelect={handleCountrySelect}
+                    initialSelectedValue={formData.country}
+                    label="Country"
                     placeholder="Search for a country..."
                   />
-                  {/* <input type="text" id="country" name="country" value={formData.country} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
-                  <select
-                        id="country-select"
-                        className='form-select' // Replace with Tailwind classes like `block w-full border rounded py-2 px-3`
-                        onChange={handleCountrySelection}
-                        value={selectedCountry?.isoCode || ''} // Control the select value
-                    >
-                        <option value=''>Select Country</option>
-                        {countries.map((country) => (
-                            <option key={country.isoCode} value={country.isoCode}>
-                                {country.name}
-                            </option>
-                        ))}
-                    </select> */}
-                  {/* <select id="country" name="country" value={formData.country} onChange={handleInputChange} required className="..."> Options </select> */}
                 </div>
 
                 {formData.country && ( // Only show states if a country is selected
@@ -358,38 +313,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                     />
                   </div>
                 )}
-
-                {/* <div className='md:col-span-2'>
-                <select
-                  id="state-select"
-                  disabled={!selectedCountry}
-                  className='form-select' // Replace with Tailwind classes
-                  onChange={handleStateChange}
-                  value={selectedState?.isoCode || ''} // Control the select value
-                >
-                  <option value=''>Select State</option>
-                  {states.map((state) => (
-                    <option key={state.isoCode} value={state.isoCode}>
-                      {state.name}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div className='md:col-span-2'>
-                <select
-                  id="city-select"
-                  disabled={!selectedState || !selectedCountry}
-                  className='form-select' // Replace with Tailwind classes
-                // No onChange for city, as it's typically just a display/selection
-                >
-                  <option value=''>Select City</option>
-                  {cities.map((city) => (
-                    <option key={city.name} value={city.name}>
-                      {city.name}
-                    </option>
-                  ))}
-                </select>
-              </div> */}
                 <div className="md:col-span-2">
                   <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
                   <input type="text" id="address" name="address" value={formData.address} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
@@ -404,7 +327,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               <h2 className="text-lg font-semibold mb-4">Payment Options</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose your payment option</p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* Payment Method Item */}
                 {/* ... payment method selectors ... */}
                 {(['bank', 'paypal', 'stripe', 'cash'] as PaymentMethod[]).map((method) => (
                   <button
@@ -472,6 +394,12 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               </div>
             )}
           </div>
+
+         <PayBill
+        open={isPayBillOpen}
+        onClose={handleClosePayBill} 
+        // onClose={() => setIsPayBillOpen(false)}
+      />
         </div>
       </form>
     </>
