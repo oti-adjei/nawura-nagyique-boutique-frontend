@@ -10,6 +10,7 @@ import type {
 
 import type { Product, ProductImage } from '@/types/product';
 import fetchStrapi from './utils';
+import qs from 'qs';
 
 
 
@@ -138,7 +139,7 @@ export async function getCategories(): Promise<Category[]> {
 export async function getNewArrivals(): Promise<Product[]> {
   console.log("Fetching New Arrivals...");
 
-   try {
+  try {
     const data = await fetchStrapi('products?populate=*&sort=publishedAt:desc&pagination[limit]=5');
     console.log("API hitting about is " + JSON.stringify(data));
 
@@ -155,7 +156,7 @@ export async function getNewArrivals(): Promise<Product[]> {
     throw error; // Re-throw the error for the calling component to handle
   }
 
-  
+
 }
 
 
@@ -197,8 +198,8 @@ export async function getNewArrivals(): Promise<Product[]> {
 
 
 export async function getDeals() {
-   try {
-   const data = await fetchStrapi('products?filters[isFeatured][$eq]=true&populate=*');
+  try {
+    const data = await fetchStrapi('products?filters[isFeatured][$eq]=true&populate=*');
     console.log("API hitting about is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
@@ -572,56 +573,62 @@ const DUMMY_ALL_PRODUCTS: Product[] = [
 export async function getRelatedProducts(
   currentProductId: string | number,
   limit: number = 5 // Default limit for related items
-): Promise<Product[]> {
+) {
   console.log(`Fetching related products for ID: ${currentProductId} (USING DUMMY DATA)`);
-
-  /*
-  // --- UNCOMMENT THIS WHEN API IS READY ---
-  const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
-  if (!STRAPI_URL) {
-      console.error("Strapi URL not configured.");
-      return []; // Return empty array on config error
-  }
-
   try {
-      // Example Strapi endpoint: Fetch products, filter out the current one, limit results.
-      // You might add more complex filtering (e.g., by category) here.
-      const endpoint = `${STRAPI_URL}/products?filters[id][$ne]=${currentProductId}&pagination[limit]=${limit}&populate=image`; // Adjust populate
+    // First, get the reference product with its category
+    const referenceProduct = await fetchStrapi(`products/${currentProductId}?populate=*`);
+    console.log("Reference Product: ", referenceProduct);
+    const categoryId = await referenceProduct.data.category.id;
+    const tagIds= referenceProduct.data.tags.data ?  await referenceProduct.data.tags.data.map((tag: { id: any; }) => tag.id): [];
+    console.log("Tag Ids: ", tagIds)
 
-      const res = await fetch(endpoint); // Add auth headers if needed
-      if (!res.ok) {
-          console.error(`Failed to fetch related products: ${res.statusText}`);
-          return []; // Return empty on fetch error
-      }
-      const data = await res.json();
 
-      if (!data.data || !Array.isArray(data.data)) {
-          console.warn("Related products data received from Strapi is not in expected format.");
-          return [];
-      }
+    // Then, find other products with the same category and tags
+    const query = qs.stringify({
+      filters: {
+        id: {
+          $ne: currentProductId
+        },
+        category: {
+          id: {
+            $eq: categoryId
+          }
+        },
+        tags: {
+          id: {
+            $in: tagIds
+          }
+        }
+      },
+      populate: '*'
+    }, {
+      encodeValuesOnly: true
+    });
 
-      // Map Strapi data to your Product type
-      return data.data.map((item: any): Product => ({
-          id: item.id,
-          name: item.attributes.name || `Product ${item.id}`,
-          price: item.attributes.price || 0,
-          originalPrice: item.attributes.originalPrice,
-          imageUrl: item.attributes.image?.data?.attributes?.url || '/placeholder-product.jpg',
-          rating: item.attributes.rating, // Ensure these fields are fetched if needed by ProductCard
-          reviewCount: item.attributes.reviewCount,
-          // Add other fields needed by ProductCard
-      }));
+    const data = await fetchStrapi(`products?${query}`);
+    // const data = await fetch(`http://localhost:1337/api/products?${query}&populate=*`);
+    console.log("API hitting about is " + JSON.stringify(data));
+
+    const attributes = data?.data; // Adjusted based on your previous response structure
+
+    if (!attributes) {
+      console.warn("Homepage content data received from Strapi is not in the expected format.");
+      return null; // Or handle this case as needed
+    }
+    // Return only the first 'limit' items
+    return attributes.slice(0, limit); // Return the first 'limit' items
+
+    return attributes; // Return the entire data object since your content is directly under 'data'
 
   } catch (error) {
-      console.error(`Error fetching related products:`, error);
-      return []; // Return empty on general error
+    console.error("Error fetching Product/Shop content:", error);
+    throw error; // Re-throw the error for the calling component to handle
   }
-  */
+
 
   // --- RETURN DUMMY DATA (DELETE/COMMENT OUT WHEN API IS READY) ---
   await new Promise(resolve => setTimeout(resolve, 60)); // Simulate delay
 
-  // Filter out the current product and return a slice
-  const related = DUMMY_ALL_PRODUCTS.filter(p => p.id !== currentProductId);
-  return related.slice(0, limit); // Return the first 'limit' items
+
 }

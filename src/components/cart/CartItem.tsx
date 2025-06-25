@@ -58,10 +58,10 @@ export function CartItemm({ item }: CartItemProps) {
       </div>
 
       {/* Size */}
-      <div className="w-full md:text-center">{item.selectedSize}</div>
+      <div className="w-full md:text-start">{item.selectedSize}</div>
 
       {/* Quantity */}
-      <div className="flex items-center gap-2 w-full md:justify-center">
+      <div className="flex items-center gap-2 w-full md:justify-start">
         <button
           onClick={handleDecrease}
           className="px-2 py-1 bg-gray-200 rounded"
@@ -78,12 +78,12 @@ export function CartItemm({ item }: CartItemProps) {
       </div>
 
       {/* Total */}
-      <div className="font-semibold w-full md:text-center">
+      <div className="font-semibold w-full md:text-start">
         {(item.price * item.quantity).toFixed(2)} €
       </div>
 
       {/* Delete / Action */}
-      <div className="w-full flex justify-end md:justify-center">
+      <div className="w-full flex justify-end md:justify-start">
         <button
           className="text-red-500 hover:underline"
           onClick={handleRemove}

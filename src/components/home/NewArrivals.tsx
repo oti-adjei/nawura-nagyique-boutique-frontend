@@ -14,45 +14,65 @@ const NewArrivals =  ({ currentArrivals }: NewArrivalsProps) => {
   const DisplayArrivals: DisplayProduct[] =  currentArrivals.map(currentArrival =>toDisplayProduct(currentArrival));
 
   return (
-    <section className="py-10 px-4 md:px-10">
-      <h2 className="text-xl md:text-2xl font-bold mb-6 text-center md:text-left">New Arrivals</h2>
-      {/* Adjust grid columns for responsiveness */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 md:gap-6">
-        {DisplayArrivals.map((product) => (
-          // Use product.id for the key
-          <Link key={product.id} href={`/shop/${product.slug}`}>
-          <div key={product.id} className="border border-gray-200 rounded-md overflow-hidden shadow-sm group hover:shadow-md transition text-left">
-            <div className="relative w-full aspect-square bg-gray-100"> {/* Aspect ratio for consistency */}
+  <section className="py-10 px-4 md:px-10">
+    {/* --- CHANGE 1: Centered the title to match "Deal of the Day" --- */}
+    <h2 className="text-xl md:text-2xl font-bold mb-6 text-center">New Arrivals</h2>
+
+    {/* --- CHANGE 2: Replaced flex-wrap with the grid system from your other component --- */}
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 justify-center">
+      {DisplayArrivals.map((product) => (
+        // --- CHANGE 3: Removed the manual width classes from the Link. The grid handles this now. ---
+        <Link key={product.id} href={`/shop/${product.slug}`}>
+          {/* --- CHANGE 4: Matched the card container styles, adding `group` for hover effects --- */}
+          <div className="bg-white shadow rounded-lg overflow-hidden text-left group transition hover:shadow-lg">
+            {/* Image (no structural changes needed here) */}
+            <div className="relative w-full h-[320px] bg-gray-100">
               {product.imageUrl ? (
                 <Image
                   src={getStrapiMedia(product.imageUrl)}
-                  alt={product.name || 'New arrival product'}
+                  alt={product.name || 'Product'}
                   fill
+                  // Kept `object-cover` from New Arrivals, but added the `group-hover` effect
                   className="object-cover group-hover:scale-105 transition-transform duration-300"
-                   sizes="(max-width: 640px) 45vw, (max-width: 768px) 30vw, (max-width: 1024px) 22vw, (max-width: 1280px) 18vw, 15vw"
+                  sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, (max-width: 1024px) 30vw, (max-width: 1280px) 22vw, 15vw"
                 />
-                 // Fallback if using standard img tag:
-                 // <img src={product.image} alt={product.title} className="w-full h-auto object-cover" />
               ) : (
-                <div className="w-full h-full bg-gray-200 flex items-center justify-center text-gray-400 text-xs">No Image</div>
+                <div className="w-full h-full flex items-center justify-center text-xs text-gray-400">No Image</div>
               )}
             </div>
-            <div className="p-3">
-              <h3 className="text-sm font-medium text-gray-800 truncate">{product.name}</h3>
-              <div className="mt-1 flex items-baseline gap-1.5">
-                {/* Format price correctly (it's a number) */}
-                <p className="text-base font-semibold text-gray-900">${product.price.toFixed(2)}</p>
+
+            {/* Info */}
+            {/* --- CHANGE 5: Matched padding and min-height for consistent card dimensions --- */}
+            <div className="p-3 min-h-[120px] flex flex-col justify-between">
+              {/* The unique content of New Arrivals is preserved below */}
+              <p className="text-xs text-gray-500 mb-1">Men's Wear</p>
+
+              {/* Added group-hover effect to the title to match the other section */}
+              <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug group-hover:text-pink-600">
+                {product.name}
+              </h3>
+
+              {/* Star Rating */}
+              <div className="mt-2 flex items-center gap-1 text-sm">
+                <div className="flex items-center gap-0.5 text-yellow-400">
+                  <span>★</span><span>★</span><span>★</span><span className="text-gray-300">★</span><span className="text-gray-300">★</span>
+                </div>
+              </div>
+
+              {/* Price */}
+              <div className="mt-2 flex items-baseline gap-2">
+                <p className="text-sm font-bold text-gray-900">${product.price.toFixed(2)}</p>
                 {product.originalPrice && (
-                  <p className="text-xs text-gray-400 line-through">${product.originalPrice.toFixed(2)}</p>
+                  <p className="text-sm text-gray-400 line-through">${product.originalPrice.toFixed(2)}</p>
                 )}
               </div>
             </div>
           </div>
-          </Link>
-        ))}
-      </div>
-    </section>
-  );
+        </Link>
+      ))}
+    </div>
+  </section>
+);
 };
 
 export default NewArrivals;

@@ -55,7 +55,7 @@ export default async function Home() {
 
 
   return (
-    <main className="w-full overflow-x-hidden bg-white dark:bg-gray-200 ">
+    <main className="w-full overflow-x-hidden bg-white text-black">
       {hero && <HeroSection hero={hero} />}
       <div className="px-5 lg:px-[130px]">
       {categories && <Categories categories={categories} />}

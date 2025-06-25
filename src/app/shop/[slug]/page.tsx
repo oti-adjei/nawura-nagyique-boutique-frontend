@@ -33,7 +33,7 @@ export default async function ProductPage({ params }: ProductPageParams) {
             <ProductDisplay productData={DP} />
             {/* RelatedProducts might need separate logic or dummy data too */}
             <RelatedProducts currentProductId={product.id} />
-            <Footer />
+            {/* <Footer /> */}
         </main>
     );
 }
