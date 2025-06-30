@@ -14,6 +14,7 @@ import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useCartStore } from '@/store/cart/useCart';
 import SelectCombobox from './CountrySelectCombobox';
 import { PayBill } from './PayBill';
+import { PaypalPayBill } from './PayBilllPaypal';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -58,6 +59,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const [cities, setCities] = useState<SelectOption[]>([]);
 
   const [isPayBillOpen, setIsPayBillOpen] = useState(false);
+  const [isPaypalPayBillOpen, setIsPaypalPayBillOpen] = useState(false);
 
 
   // Fetch Countries on component mount
@@ -187,6 +189,12 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       setIsPayBillOpen(true);
       return; // Stop the rest of the function from running for now
     } 
+    else if (selectedPaymentMethod === 'paypal') {
+
+      setIsPaypalPayBillOpen(true);
+      return; // Stop the rest of the function from running for now
+    }
+      // For PayPal, you would typically redirect to a PayPal checkout page.
     // finally {
     //   setIsSubmitting(false); // Reset submitting state after submission
     // }
@@ -258,8 +266,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
         <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8 xl:gap-12">
           <div className="lg:col-span-2 space-y-8">
             {/* Personal Information ... */}
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Personal Information</h2>
+            <div className="bg-white p-6 rounded-lg shadow">
+              <h2 className="text-lg font-semibold mb-4  dark:text-gray-100">Personal Information</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name</label>
@@ -323,7 +331,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
             {/* Payment Options ... */}
 
-            <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
+            <div className="bg-white  p-6 rounded-lg shadow">
               <h2 className="text-lg font-semibold mb-4">Payment Options</h2>
               <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose your payment option</p>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -338,7 +346,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                       : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
                       }`}
                   >
-                    <span className="text-sm font-medium text-gray-800 dark:text-gray-200 capitalize">{method === 'bank' ? 'Bank Card' : method}</span>
+                    <span className="text-sm font-medium  dark:text-gray-200 capitalize">{method === 'bank' ? 'Bank Card' : method}</span>
                     {/* Custom Radio Lookalike */}
                     <div className={`w-4 h-4 border rounded-full flex items-center justify-center ${selectedPaymentMethod === method ? 'border-green-500 bg-green-500' : 'border-gray-400 dark:border-gray-500'
                       }`}>
@@ -364,8 +372,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   
               </div>
               {/* Cancellation Policy */}
-              <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow">
-                <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Cancellation Policy</h2>
+              <div className="bg-white  p-6 rounded-lg shadow">
+                <h2 className="text-lg font-semibold mb-4  dark:text-gray-100">Cancellation Policy</h2>
                 <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">
                   At Grabit, we understand that plans can change unexpectedly. That’s why we’ve crafted our cancellation policy to provide you with flexibility and peace of mind. When you book a car with us, you have the freedom to modify or cancel your reservation without incurring any cancellation fees up to 12 hours/days before your scheduled pick-up time. See more details.
                 </p>
@@ -389,7 +397,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               isSubmitting={isSubmitting} // Pass isSubmitting to disable button
             />
             {formSubmissionMessage && (
-              <div className={`mt-4 p-3 rounded-md text-sm ${formSubmissionMessage.includes('success') || formSubmissionMessage.includes('succeeded') || formSubmissionMessage.includes('processing') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+              <div className={`mt-4 p-3 rounded-md text-sm ${formSubmissionMessage.includes('success') || formSubmissionMessage.includes('succeeded') || formSubmissionMessage.includes('processing') ? 'bg-green-100 text-green-700' : 'bg-priamry text-primary'}`}>
                 {formSubmissionMessage}
               </div>
             )}
@@ -397,6 +405,11 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
          <PayBill
         open={isPayBillOpen}
+        onClose={handleClosePayBill} 
+        // onClose={() => setIsPayBillOpen(false)}
+      />
+     <PaypalPayBill
+        open={isPaypalPayBillOpen}
         onClose={handleClosePayBill} 
         // onClose={() => setIsPayBillOpen(false)}
       />

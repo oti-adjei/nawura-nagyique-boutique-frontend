@@ -1,4 +1,5 @@
 // components/PromoBanner.tsx
+import { getStrapiMedia } from '@/lib/utils';
 import type { PromotionalBanner } from '@/types/api'; // Adjust import path
 import Image from 'next/image';
 
@@ -13,22 +14,22 @@ const PromoBanner = ({ promoBanner }: PromoBannerProps) => {
 
   return (
     // Option 1: Text Overlay on Background Image
-    <section className="relative bg-gray-800 text-white py-12 px-4 md:px-10 text-center my-6 overflow-hidden">
-       {image && (
-            <Image
-                src={image}
-                alt={title || 'Promotional banner background'}
-                fill
-                className="object-cover opacity-40 z-0" // Adjust opacity as needed
-            />
-       )}
-       <div className="relative z-10"> {/* Content needs relative positioning */}
-           <h3 className="text-lg md:text-2xl font-semibold mb-4">{title}</h3>
-           {/* Using a button as the API doesn't specify a link URL */}
-           <button className="mt-2 px-6 py-2.5 bg-pink-500 rounded text-white font-medium hover:bg-pink-600 transition">
-               {cta}
-           </button>
-       </div>
+    <section className="py-10 px-4 md:px-10 relative h-[50dvh] text-white text-center my-6">
+      {image && (
+        <Image
+          src={getStrapiMedia(image)}
+          alt={title || 'Promotional banner background'}
+          fill
+          className="px-4 md:px-10 object-cover opacity-90 z-0" // Adjust opacity as needed
+        />
+      )}
+      <div className="relative z-10 w-full h-full pr-6 flex flex-col items-end justify-center"> {/* Content needs relative positioning */}
+        <h3 className="text-lg md:text-2xl font-semibold mb-4">{title}</h3>
+        {/* Using a button as the API doesn't specify a link URL */}
+        <button className="mt-2 px-6 py-2.5 bg-primary rounded text-white font-medium transition">
+          {cta}
+        </button>
+      </div>
     </section>
 
     // Option 2: Simple Text Banner (like original, ignoring the image)

@@ -100,6 +100,8 @@ export interface Product {
   description: string;
   price: number;
   availableColors?: Color[];
+  tags?: string[]; // Optional: if you want to display categories
+  category?: string;
   sizes?: Size[];
   stock: number;
   isFeatured: boolean;
@@ -123,7 +125,8 @@ export interface DisplayProduct {
   category?: string;
   rating?: number;
   reviewCount?: number;
-  colors?: string[];
+  colors?: string[];// Optional: if you want to display categories
+  tags?: string[]; // Optional: if you want to display categories
   sizes?: (string | number)[];
   thumbnails?: string[];
   description?: string;
@@ -164,6 +167,8 @@ export function toDisplayProduct(product: Product): DisplayProduct {
     description: product.description,
     colors: product.availableColors?.map((c) => c.name),
     sizes: product.sizes?.map((s) => s.name),
+    category: product.category,
+    tags: product.tags,
   };
 }
 

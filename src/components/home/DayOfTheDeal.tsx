@@ -19,16 +19,16 @@ const DayOfTheDeal = ({ deals }: DayOfTheDealProps) => {
   const displayDeals: DisplayProduct[] = deals.map(deal => toDisplayProduct(deal));
 
   return (
-    <section className="py-10 px-4 md:px-10 text-center">
+    <section className="py-10 px-4 md:px-10 text-left">
   <h2 className="text-xl md:text-2xl font-bold mb-4">Deal of the Day</h2>
   <p className="mb-8 text-sm text-gray-600">Don’t miss out on exclusive daily offers!</p>
 
-  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 justify-center">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-5 gap-4 md:gap-6 justify-center">
     {displayDeals.map((deal) => (
       <Link key={deal.id} href={`/shop/${deal.slug}`}>
         <div className="bg-white shadow rounded-lg overflow-hidden text-left group transition hover:shadow-lg">
           {/* Image */}
-          <div className="relative w-full h-[320px] bg-gray-100">
+          <div className="relative w-full h-[270px] bg-gray-100">
             {deal.imageUrl ? (
               <Image
                 src={getStrapiMedia(deal.imageUrl)}
@@ -44,12 +44,12 @@ const DayOfTheDeal = ({ deals }: DayOfTheDealProps) => {
 
           {/* Text Info */}
           <div className="p-3 min-h-[120px] flex flex-col justify-between">
-            <h3 className="text-sm font-medium text-gray-800 line-clamp-2 group-hover:text-pink-600">
+            <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug group-hover:text-primary">
               {deal.name}
-            </h3>
+            </p>
 
             <div className="mt-2 flex items-baseline gap-1.5">
-              <p className="text-base font-semibold text-pink-600">${deal.price.toFixed(2)}</p>
+              <p className="text-base font-semibold ">${deal.price.toFixed(2)}</p>
               {deal.originalPrice && (
                 <p className="text-xs text-gray-400 line-through">${deal.originalPrice.toFixed(2)}</p>
               )}

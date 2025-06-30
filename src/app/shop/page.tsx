@@ -4,6 +4,7 @@ import Link from 'next/link';
 import ProductCard from '@/components/shop/ProductCard';
 import { getProducts } from '@/lib/api';
 import FilterOptions from '@/components/shop/FilterOption';
+import FilteredProductDisplay from '@/components/shop/FIlteredDisplay';
 
 export default async function ShopPage() {
 
@@ -48,19 +49,20 @@ export default async function ShopPage() {
             </button>
           ))}
         </div> */}
-        <FilterOptions />
+        {/* <FilterOptions />
 
-        {/* Products */}
+        
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-10 mb-4">
           {products.map((product: any) => (
             <Link key={product.id} href={`/shop/${product.slug}`}>
-              {/* <Link key={product.id} href={`/product/${product.slug}`}> */}
+          
               <ProductCard
                 product={product}
               />
             </Link>
           ))}
-        </div>
+        </div> */}
+        <FilteredProductDisplay initialProducts={productRes} />
       </div>
     </main>
   );

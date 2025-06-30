@@ -5,6 +5,7 @@ import {
   getDeals,
   getFeatures,
   getCollections,
+  getPromotionalBanner,
 } from "@/lib/api";
 import HeroSection from '../components/home/HeroSection';
 import Categories from '../components/home/Categories';
@@ -20,14 +21,14 @@ export default async function Home() {
     categories,
     newArrivals,
     deals,
-    features,
+    promo,
     collections
   ] = await Promise.all([
     getHomepageContent(),
     getCategories(),
     getNewArrivals(),
     getDeals(),
-    getFeatures(),
+    getPromotionalBanner(), // Assuming you have a function to get the promo banner
     getCollections()
   ]);
 
@@ -48,7 +49,7 @@ export default async function Home() {
   const {
     Hero: hero,
     Overview: overview,
-    PromotionalBanner: promo,
+    // PromotionalBanner: promo,
     // Collections: collections,
   } = data;
 
@@ -64,7 +65,7 @@ export default async function Home() {
       {deals && <DayOfTheDeal deals={deals} />}
       {promo && <PromoBanner promoBanner={promo} />}
       {collections && <Collections collections={collections} />}
-      {features && <Features features={features} />}
+       <Features />
       </div>
     </main>
   );

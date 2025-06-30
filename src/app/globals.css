@@ -1,34 +1,125 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* src/app/globals.css */
+
+/* Important: This replaces @tailwind directives in v4 */
+@import "tailwindcss";
+
+/* Define your custom theme using the @theme directive */
+@theme {
+  /* --- Colors --- */
+  /* Colors are usually defined in a --color-<name> namespace */
+  --color-primary: #A40A3C;
+  --color-primary-light: #CE3F5E;
+  --color-primary-dark: #7D002B;
+
+  --color-main-text: #313132;
+  --color-sub-text: #5A5A5A;
+  --color-background: #F7F7F7;
+
+  /* --- Font Families --- */
+  /* Font families are usually defined in a --font-<name> namespace */
+  /* The first font is your primary (Poppins), followed by generic fallbacks */
+  --font-sans: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: ui-serif, Georgia, Cambria, 'Times New Roman', Times, serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace;
+
+  /* --- Font Sizes --- */
+  /* Font sizes are defined using the --font-size-<name> namespace */
+  --font-size-h1: 64px;
+  --font-size-h2: 32px;
+  --font-size-h3: 24px;
+  --font-size-h4: 20px;
+  --font-size-h5: 18px;
+  --font-size-base: 16px; /* Renaming 'text' to 'base' for consistency */
+  --font-size-small: 14px; /* Renaming 'Small text' to 'small' */
+  --font-size-caption: 12px;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/* --- Global Base Styles --- */
+/* Apply default styles to html and body */
+html,
+body {
+  /* Use the CSS variables defined in @theme */
+  height: 100%;
+  background-color: var(--color-background);
+  color: var(--color-main-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* --- Heading Styles --- */
+/* Apply specific font sizes to headings */
+h1 {
+  font-size: var(--font-size-h1);
+  font-weight: 700; /* Poppins bold */
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  font-weight: 600; /* Poppins semibold */
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  font-weight: 500; /* Poppins medium */
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  font-weight: 500;
+}
+
+h5 {
+  font-size: var(--font-size-h5);
+  font-weight: 500;
+}
+
+/* Default paragraph text */
+p {
+  font-size: var(--font-size-base);
+}
+
+/* Specific classes for smaller text */
+.text-small {
+  font-size: var(--font-size-small);
+}
+
+.text-caption {
+  font-size: var(--font-size-caption);
+}
+
+
+/* --- Custom Screens (from your example) --- */
+/* For custom screens (breakpoints), you'd define them here using @custom-variant */
+/* This can be a bit more complex, but here's how you'd do it for 'widescreen' and 'tallscreen' */
+/* Note: You might need to import @custom-variant first if it's not automatically available */
+
+@custom-variant widescreen (@media (min-aspect-ratio: 3/2));
+@custom-variant tallscreen (@media (min-aspect-ratio: 13/20));
+
+
+/* --- Custom Keyframes and Animation (from your example) --- */
+/* Keyframes are defined directly inside the @theme block */
+@theme {
+  /* ... your colors and font definitions ... */
+
+  /* Define your keyframes directly */
+  @keyframes open-menu {
+    0% { transform: scaleY(0); }
+    80% { transform: scaleY(1.2); }
+    100% { transform: scaleY(1); }
   }
-}
-html {
-  height: 100%;
+
+  /* Then reference them for animation properties */
+  /* Animations are often defined as CSS variables with --animate-<name> */
+  --animate-open-menu: open-menu 0.5s ease-in-out forwards;
 }
 
-body {
-  height: 100%;
-   /* min-height: 100vh; */
-}
+/* Example of usage for custom screens and animation */
+/* In your components, you can now use: */
+/* <div class="widescreen:bg-blue-500">...</div> */
+/* <div class="tallscreen:flex-col">...</div> */
+/* <div class="animate-open-menu">...</div> */
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}

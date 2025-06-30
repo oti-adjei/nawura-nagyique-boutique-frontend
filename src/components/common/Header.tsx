@@ -12,10 +12,26 @@ import Image from "next/image";
 import LocationPopup from "./LocationPopups";
 import { IoLocationOutline } from "react-icons/io5";
 import { useCartStore } from "@/store/cart/useCart";
+import SearchDialog from "./SearchDialog";
+import { CountryData, useLocationStore } from "@/store/location/useLocationStore";
+import { ChevronDownIcon } from "lucide-react";
+import LocationDialog from "./LocationDialog";
 
 const Header = () => {
+    const { country, currency, setCountryAndCurrency, setCurrency, allCountries } = useLocationStore();
     const itemCount = useCartStore((state) => state.getItemCount());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isLocationOpen, setIsLocationOpen] = useState(false);
+
+
+        // --- ADD THIS: State and handlers for the Search Dialog ---
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const openSearch = () => setIsSearchOpen(true);
+    const closeSearch = () => setIsSearchOpen(false);
+
+    // --- END ---
+
+    const availableCurrencies = [...new Set(allCountries.map(c => c.currency))].sort();
 
     const toggleMobileMenu = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -33,6 +49,10 @@ const Header = () => {
         setShowPopup(false);
     };
 
+    const handleLocationSelect = (selectedCountry: CountryData) => {
+        setCountryAndCurrency(selectedCountry);
+    };
+
     // New state to track if component has mounted on the client
     const [hasMounted, setHasMounted] = useState(false);
  
@@ -46,6 +66,7 @@ const Header = () => {
 
 
     return (
+        <>
         <header className="bg-white sticky top-0 z-50 shadow-md">
             {/* Top Bar */}
             <div className="bg-gray-100 text-gray-600 py-2 text-sm hidden md:block">
@@ -71,10 +92,21 @@ const Header = () => {
                             {/* Add dropdown for language if needed */}
                         </div>
                         <div className="relative">
-                            <button className="hover:text-gray-800 focus:outline-none">
-                                USD <span className="text-xs">&#9660;</span>
-                            </button>
-                            {/* Add dropdown for currency if needed */}
+                            {/* --- CHANGE: CURRENCY SELECTOR IS NOW DYNAMIC --- */}
+                                <select 
+                                    value={currency} 
+                                    onChange={(e) => setCurrency(e.target.value)}
+                                    className="bg-transparent hover:text-gray-800 focus:outline-none appearance-none pr-4"
+                                >
+                                    {availableCurrencies.length > 0 ? (
+                                        availableCurrencies.map(curr => (
+                                            <option key={curr} value={curr}>{curr}</option>
+                                        ))
+                                    ) : (
+                                        // Show the currently selected currency if list hasn't loaded
+                                        <option value={currency}>{currency}</option>
+                                    )}
+                                </select>
                         </div>
                     </div>
                 </div>
@@ -84,18 +116,15 @@ const Header = () => {
             <div className="container mx-auto  px-12 py-4 flex items-center justify-between">
                 {/* Logo */}
 
-                <div className="relative">
-                    <div
-                        onClick={togglePopup}
-                        className="cursor-pointer px-3 py-1 rounded hover:bg-gray-700"
+                  {/* LOCATION SELECTOR TRIGGER */}
+                    <button
+                        onClick={() => setIsLocationOpen(true)}
+                        className="flex items-center space-x-1 cursor-pointer p-2 rounded-md hover:bg-gray-100"
                     >
-                        <IoLocationOutline style={{ display: "inline" }} /> {location}
-                    </div>
-
-                    {showPopup && (
-                        <LocationPopup onSelectLocation={handleLocationChange} />
-                    )}
-                </div>
+                        <span className="text-2xl">{country.flag}</span>
+                        <span className="text-sm font-medium text-gray-700">{country.name}</span>
+                        <ChevronDownIcon className="h-4 w-4 text-gray-500" />
+                    </button>
                 {/* <Link href="/" className="text-xl font-semibold text-gray-800">
                     YourBrandName
                 </Link> */}
@@ -112,7 +141,10 @@ const Header = () => {
 
                 {/* Icons */}
                 <div className="flex items-center space-x-4">
-                    <AiOutlineSearch className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
+                    
+                   <button type="button" onClick={openSearch} aria-label="Open search dialog">
+                            <AiOutlineSearch className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
+                        </button>
                     <Link href="/shop">
                         <AiOutlineUser className="text-xl cursor-pointer text-gray-700 hover:text-gray-900 hidden sm:block" />
                     </Link>
@@ -200,6 +232,14 @@ const Header = () => {
                 </div>
             )}
         </header>
+        {/* --- ADD THIS: Render the SearchDialog and pass it the state and close handler --- */}
+            <SearchDialog isOpen={isSearchOpen} onClose={closeSearch} />
+             <LocationDialog
+                isOpen={isLocationOpen}
+                onClose={() => setIsLocationOpen(false)}
+                onSelect={handleLocationSelect}
+            />
+        </>
     );
 };
 

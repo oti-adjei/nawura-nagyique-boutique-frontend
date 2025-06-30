@@ -28,7 +28,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   isSubmitting
 }) => {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow sticky top-8"> {/* Sticky positioning */}
+    <div className="bg-white p-6 rounded-lg shadow sticky top-8"> {/* Sticky positioning */}
       <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Review your cart</h2>
 
       {/* Cart Items */}
@@ -47,7 +47,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             <div className="flex-grow">
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{item.name}</p>
               {item.description && (
-                 <p className="text-xs text-gray-500 dark:text-gray-400">{item.description}</p>
+                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">{item.description}</p>
               )}
                <p className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</p>
             </div>
@@ -105,7 +105,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <button
         type="submit" // This button submits the parent CheckoutClient form
         disabled={isSubmitting} // Disable when submitting
-        className="w-full mt-6 bg-pink-600 text-white py-3 px-4 rounded-md shadow-sm font-semibold hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition disabled:opacity-50"
+        className="w-full mt-6 bg-primary text-white py-3 px-4 rounded-md shadow-sm font-semibold hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-pink-500 transition disabled:opacity-50"
       >
         {isSubmitting ? 'Processing...' : 'Pay Now'}
       </button>

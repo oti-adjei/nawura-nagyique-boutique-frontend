@@ -13,11 +13,11 @@ export default function CartPage() {
 
   return (
     <>
-      <section className="container mx-auto py-10">
-        <h1 className="text-2xl font-bold mb-8">Shopping Cart</h1>
+      <section className=" bg-white container mx-auto py-10">
+        <h1 className="text-2xl text-black font-bold mb-8">Shopping Cart</h1>
 
         {items.length === 0 ? (
-          <p>Your cart is empty.</p>
+          <p className="text-black">Your cart is empty.</p>
         ) : (
           <>
             <div className="hidden md:grid grid-cols-6 text-gray-500 text-sm font-medium mb-4">

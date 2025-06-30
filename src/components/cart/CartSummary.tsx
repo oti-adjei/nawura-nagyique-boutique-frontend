@@ -18,10 +18,10 @@ export function CartSummary({ total }: CartSummaryProps) {
           </button>
 
           <div className="flex items-center gap-4">
-            <span className="text-xl font-bold">{total.toFixed(2)} €</span>
+            <span className="text-xl text-black font-bold">{total.toFixed(2)} €</span>
             <button
               onClick={() => router.push('/checkout')}
-              className="bg-primary  px-6 py-3 rounded"
+              className="bg-primary text-black px-6 py-3 rounded"
             >
               Check Out
             </button>
