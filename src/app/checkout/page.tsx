@@ -1,27 +1,9 @@
 // app/checkout/page.tsx
 import CheckoutClient from '@/components/checkout/CheckoutClient'; // Adjust path
-import Footer from '@/components/common/Footer';
-import Header from '@/components/common/Header';
 import type { CartItem } from '@/types/checkout'; // Adjust path
 import Link from 'next/link';
 
-// Simulate fetching cart data (replace with your actual logic)
-async function getCartItems(): Promise<CartItem[]> {
-    console.log("Fetching cart items for checkout...");
-    // Replace with your actual cart fetching logic (e.g., from context, API, session)
-    await new Promise(resolve => setTimeout(resolve, 50)); // Simulate delay
-    return [
-        { id: 'prod1', name: "DuoComfort Sofa Premium", quantity: 1, price: 20.00, imageUrl: '/placeholder-cart-item.jpg', description: '2 pieces' },
-        { id: 'prod2', name: "DuoComfort Sofa Premium", quantity: 1, price: 20.00, imageUrl: '/placeholder-cart-item.jpg', description: '2 pieces' },
-        { id: 'prod3', name: "DuoComfort Sofa Premium", quantity: 1, price: 5.00, imageUrl: '/placeholder-cart-item.jpg', description: '2 pieces' },
-        // You might have multiple items with the same product ID aggregated,
-        // or your cart logic might handle quantities differently.
-        // Adjust dummy data to reflect your cart structure.
-    ];
-}
-
 export default async function CheckoutPage() {
-    const cartItems = await getCartItems();
     const shippingCost = 5.00; // Example shipping cost
 
     return (

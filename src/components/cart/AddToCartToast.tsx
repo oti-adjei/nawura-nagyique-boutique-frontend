@@ -1,7 +1,7 @@
 // components/toasts/AddToCartToast.tsx
 "use client";
 
-import { useState, useEffect, Fragment } from 'react';
+import { useState, useEffect, Fragment, useCallback } from 'react';
 import type { CartAdditionItem } from '@/types/cart'; // Use the specific type
 import Image from 'next/image';
 import { getStrapiMedia } from '@/lib/utils';
@@ -27,6 +27,15 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
 }) => {
   const [show, setShow] = useState(false);
 
+    const handleClose = () => {
+    setShow(false);
+    // Call the parent's onClose after the transition ends (or slightly before)
+    // Using a timeout ensures the parent state updates after visual closing starts
+    setTimeout(() => {
+        onClose();
+    }, 300); // Match transition duration
+  };
+
   // Effect to show the toast when 'item' changes
   useEffect(() => {
     if (item) {
@@ -41,16 +50,9 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
     } else {
       setShow(false); // Hide if item becomes null
     }
-  }, [item, duration]); // Dependency array includes item and duration
+  }, [item, duration,handleClose]); // Dependency array includes item and duration
 
-  const handleClose = () => {
-    setShow(false);
-    // Call the parent's onClose after the transition ends (or slightly before)
-    // Using a timeout ensures the parent state updates after visual closing starts
-    setTimeout(() => {
-        onClose();
-    }, 300); // Match transition duration
-  };
+
 
   // Don't render anything if there's no item
   if (!item) return null;

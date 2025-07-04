@@ -1,5 +1,4 @@
 import type {
-  DealProduct,
   // LegacyContent,
   PromotionalBanner,
   Collection,
@@ -8,14 +7,14 @@ import type {
   // HeroContent // Assuming HeroContent is defined
 } from '@/types/api'; // Adjust path as needed
 
-import type { Product, ProductImage } from '@/types/product';
+import type { Product, } from '@/types/product';
 import fetchStrapi from './utils';
 import qs from 'qs';
 
 
 
 
-export async function getHomepageContent(): Promise<any> {
+export async function getHomepageContent() {
   try {
     const data = await fetchStrapi('homepage?populate[Hero][populate]=imageUrl&populate[Overview][populate]=image&populate[seo_metadata][populate]&populate[products][populate]');
     console.log("API hitting is " + JSON.stringify(data));
@@ -34,7 +33,7 @@ export async function getHomepageContent(): Promise<any> {
   }
 }
 
-export async function fetchAboutPage(): Promise<any> {
+export async function fetchAboutPage(){
   try {
     const data = await fetchStrapi('about?populate[History][populate]=images');
     console.log("API hitting about is " + JSON.stringify(data));
@@ -117,44 +116,6 @@ export async function getNewArrivals(): Promise<Product[]> {
 
 }
 
-
-// export async function getLegacyContent(): Promise<LegacyContent> {
-//   console.log("Fetching Legacy Content...");
-//   /*
-//   // UNCOMMENT THIS BLOCK TO FETCH FROM STRAPI
-//   if (!STRAPI_URL) throw new Error("Strapi URL not configured.");
-//   const endpoint = `${STRAPI_URL}/legacy-content?populate=image`;
-
-//   try {
-//     const res = await fetch(endpoint); // Add headers if auth needed
-//     if (!res.ok) throw new Error(`Failed to fetch legacy content: ${res.statusText}`);
-//     const data = await res.json();
-//     const attributes = data?.data?.attributes;
-
-//     if (!attributes) throw new Error("Legacy content data received from Strapi is not in expected format.");
-
-//     return {
-//       title: attributes.title,
-//       description: attributes.description,
-//       cta: attributes.cta,
-//       image: attributes.image?.data?.attributes?.url || '/placeholder-legacy.jpg',
-//     };
-//   } catch (error) {
-//     console.error("Error fetching legacy content:", error);
-//     throw error; // Re-throw error or handle differently
-//   }
-//   */
-
-//   // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
-//   // return {
-//   //   // image: '/legacy.jpg',
-//   //   title: 'A Legacy of Light',
-//   //   description: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Quos, animi!',
-//   //   cta: 'Shop Legacy Now',
-//   // };
-// }
-
-
 export async function getDeals() {
   try {
     const data = await fetchStrapi('products?filters[isFeatured][$eq]=true&populate=*');
@@ -198,32 +159,6 @@ export async function getCollections(): Promise<Collection[]> {
 
 export async function getFeatures(): Promise<Feature[]> {
   console.log("Fetching Features...");
-  /*
-  // UNCOMMENT THIS BLOCK TO FETCH FROM STRAPI
-  if (!STRAPI_URL) throw new Error("Strapi URL not configured.");
-  const endpoint = `${STRAPI_URL}/features?populate=icon`;
- 
-  try {
-    const res = await fetch(endpoint); // Add headers if auth needed
-    if (!res.ok) throw new Error(`Failed to fetch features: ${res.statusText}`);
-    const data = await res.json();
- 
-    if (!data.data || !Array.isArray(data.data)) {
-      throw new Error("Features data received from Strapi is not in expected format.");
-    }
- 
-    return data.data.map((item: any): Feature => ({
-      id: item.id,
-      title: item.attributes.title,
-      icon: item.attributes.icon?.data?.attributes?.url || `/placeholder-feature.png`,
-    }));
-  } catch (error) {
-    console.error("Error fetching features:", error);
-    throw error; // Re-throw error or handle differently
-  }
-  */
-
-  // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
   return [
     { id: 401, title: 'Free Shipping', icon: '/icons/free-shipping.png' },
     { id: 402, title: '24x7 Support', icon: '/icons/support.png' },
@@ -291,7 +226,8 @@ export async function getRelatedProducts(
     const referenceProduct = await fetchStrapi(`products/${currentProductId}?populate=*`);
     console.log("Reference Product: ", referenceProduct);
     const categoryId = await referenceProduct.data.category.id;
-    const tagIds= referenceProduct.data.tags.data ?  await referenceProduct.data.tags.data.map((tag: { id: any; }) => tag.id): [];
+    const tagIds= referenceProduct.data.tags.data ?  await referenceProduct.data.tags.data.map((tag: { id: unknown
+      ; }) => tag.id): [];
     console.log("Tag Ids: ", tagIds)
 
 

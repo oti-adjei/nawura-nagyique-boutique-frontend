@@ -1,7 +1,7 @@
 // components/modals/Modal.tsx
 "use client";
 
-import React, { Fragment, useEffect, useRef } from 'react';
+import React, { Fragment, useEffect } from 'react';
 import { Dialog, Transition } from '@headlessui/react'; // Using Headless UI for accessibility
 
 interface ModalProps {

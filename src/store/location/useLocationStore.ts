@@ -4,6 +4,22 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 // Define the interface for our clean, transformed country data
+
+interface RawApiCountry {
+  name: {
+    common: string;
+    // Add other name properties if you use them, e.g., official, nativeName
+  };
+  cca2: string;
+  currencies?: {
+    [key: string]: { // Object where keys are currency codes (e.g., "USD", "EUR")
+      name: string;
+      symbol: string;
+    };
+  };
+  flag: string; // The emoji flag
+  // Add other properties if you fetch them with '?fields=' in the URL
+}
 export interface CountryData {
   name: string;
   code: string;
@@ -77,7 +93,7 @@ export const useLocationStore = create<LocationState>()(
 
           // Transform the raw API data into our clean `CountryData` format
           const transformedData = rawData
-            .map((country: any): CountryData | null => {
+            .map((country: RawApiCountry): CountryData | null => {
               const currencyCode = Object.keys(country.currencies || {})[0];
               if (!currencyCode) return null; // Skip countries with no currency
 

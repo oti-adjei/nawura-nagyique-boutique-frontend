@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { FaFacebookF, FaInstagram, FaLinkedinIn, FaTwitter } from "react-icons/fa";
+import Image from 'next/image';
 
 const Footer = () => {
 
@@ -9,15 +10,20 @@ const Footer = () => {
 
                 {/* Logo & Description */}
                 <div className="md:col-span-1">
-                    <img src="/logo.png" alt="Logo" className="h-14 mb-4" />
-                    <p className="mb-1">Grabit is the biggest market of grocery products.</p>
+                    <Image 
+                        src="/logo.png" 
+                        alt="Logo" 
+                        className="h-14 mb-4" 
+                        width={180}
+                        height={30}/>
+                    <p className="mb- text-small">Grabit is the biggest market of grocery products.</p>
                     <p>Get your daily needs from our store.</p>
                 </div>
 
                 {/* Category */}
                 <div>
-                    <h4 className="font-semibold mb-2 border-b pb-1">Category</h4>
-                    <ul className="space-y-1">
+                    <h5 className="font-semibold mb-2 border-b pb-1">Category</h5>
+                    <ul className="text-base space-y-1">
                         <li>Clothes</li>
                         <li>Sandles</li>
                         <li>Beads</li>
@@ -29,8 +35,8 @@ const Footer = () => {
 
                 {/* Company */}
                 <div>
-                    <h4 className="font-semibold mb-2 border-b pb-1">Company</h4>
-                    <ul className="space-y-1">
+                    <h5 className="font-semibold mb-2 border-b pb-1">Company</h5>
+                    <ul className="text-base space-y-1">
                         <li>About us</li>
                         <li>Delivery</li>
                         <li>Legal Notice</li>
@@ -42,8 +48,8 @@ const Footer = () => {
 
                 {/* Account */}
                 <div>
-                    <h4 className="font-semibold mb-2 border-b pb-1">Account</h4>
-                    <ul className="space-y-1">
+                    <h5 className="font-semibold mb-2 border-b pb-1">Account</h5>
+                    <ul className="text-base space-y-1">
                         <li>Sign In</li>
                         <li>View Cart</li>
                         <li>Return Policy</li>
@@ -56,7 +62,7 @@ const Footer = () => {
                 {/* Contact */}
                 <div>
                     <h4 className="font-semibold mb-2 border-b pb-1">Contact</h4>
-                    <ul className="space-y-2">
+                    <ul className=" text-base space-y-2">
                         <li className="flex items-start gap-2">
                             <span>📍</span>
                             <span>2548 Broaddus Maple Court, Madisonville KY 4783, USA</span>

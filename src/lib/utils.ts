@@ -1,7 +1,4 @@
-import { Stripe, loadStripe } from '@stripe/stripe-js';
 
-
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
 
 export function getStrapiURL() {
   return process.env.NEXT_PUBLIC_STRAPI_URL ?? "http://localhost:1337";
@@ -10,7 +7,7 @@ export function getStrapiToken() {
   return process.env.STRAPI_API_TOKEN;
 }
 
-async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: any) {
+async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'DELETE' = 'GET', body?: unknown) {
   const token = getStrapiToken();
   const SURL = getStrapiURL();
 

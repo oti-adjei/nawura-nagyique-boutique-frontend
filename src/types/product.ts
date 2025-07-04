@@ -68,7 +68,7 @@ export interface ProductImage {
   url: string;
   previewUrl: string | null;
   provider: string;
-  provider_metadata: any;
+  provider_metadata: unknown;
   createdAt: string;
   updatedAt: string;
   publishedAt: string;
@@ -173,12 +173,34 @@ export function toDisplayProduct(product: Product): DisplayProduct {
 }
 
 // ---------- Optional: Type Guard ----------
-export function isDisplayProduct(obj: any): obj is DisplayProduct {
+// export function isDisplayProduct(obj: any): obj is DisplayProduct {
+//   return (
+//     obj &&
+//     typeof obj.id !== 'undefined' &&
+//     typeof obj.name === 'string' &&
+//     typeof obj.price === 'number' &&
+//     typeof obj.slug === 'string'
+//   );
+// }
+
+export function isDisplayProduct(obj: unknown): obj is DisplayProduct {
+  // First, check if obj is an object and not null
+  if (typeof obj !== 'object' || obj === null) {
+    return false;
+  }
+
+  // Cast to an intermediate type to allow property access for checks
+  // This is safe because we're only reading properties for type narrowing
+  const potentialProduct = obj as Partial<DisplayProduct>;
+
   return (
-    obj &&
-    typeof obj.id !== 'undefined' &&
-    typeof obj.name === 'string' &&
-    typeof obj.price === 'number' &&
-    typeof obj.slug === 'string'
+    typeof potentialProduct.id !== 'undefined' &&
+    (typeof potentialProduct.id === 'number' || typeof potentialProduct.id === 'string') &&
+    typeof potentialProduct.name === 'string' &&
+    typeof potentialProduct.price === 'number' &&
+    typeof potentialProduct.imageUrl === 'string' && // Add check for imageUrl, as it's required
+    Array.isArray(potentialProduct.allImages) && // Add check for allImages
+    typeof potentialProduct.slug === 'string'
+    // You might want to add more checks here for required properties
   );
 }

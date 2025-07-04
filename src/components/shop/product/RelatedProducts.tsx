@@ -31,7 +31,7 @@ interface RelatedProductsProps {
             Product You May Also Like
           </h2>
           <p className="mt-1 text-sm text-gray-500">
-            Don't wait. The time will never be just right.
+            Don&apos;t wait. The time will never be just right.
           </p>
         </div>
         {/* Responsive Grid */}

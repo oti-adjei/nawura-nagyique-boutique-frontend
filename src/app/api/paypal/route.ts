@@ -172,7 +172,6 @@
 // }
 
 import { NextResponse } from 'next/server';
-import { headers } from 'next/headers';
 interface PaymentData {
   name: string;
   email: string;

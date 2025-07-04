@@ -9,8 +9,8 @@ import {
 import { FiMenu } from "react-icons/fi";
 import Link from "next/link";
 import Image from "next/image";
-import LocationPopup from "./LocationPopups";
-import { IoLocationOutline } from "react-icons/io5";
+// import LocationPopup from "./LocationPopups";
+// import { IoLocationOutline } from "react-icons/io5";
 import { useCartStore } from "@/store/cart/useCart";
 import SearchDialog from "./SearchDialog";
 import { CountryData, useLocationStore } from "@/store/location/useLocationStore";
@@ -37,17 +37,17 @@ const Header = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
-    const [location, setLocation] = useState('New York');
+    // const [location, setLocation] = useState('New York');
     const [showPopup, setShowPopup] = useState(false);
 
-    const togglePopup = () => {
-        setShowPopup(!showPopup);
-    };
+    // const togglePopup = () => {
+    //     setShowPopup(!showPopup);
+    // };
 
-    const handleLocationChange = (newLocation: string) => {
-        setLocation(newLocation);
-        setShowPopup(false);
-    };
+    // const handleLocationChange = (newLocation: string) => {
+    //     setLocation(newLocation);
+    //     setShowPopup(false);
+    // };
 
     const handleLocationSelect = (selectedCountry: CountryData) => {
         setCountryAndCurrency(selectedCountry);
@@ -76,7 +76,7 @@ const Header = () => {
                         <span>+90 535 456 55 60</span>
                     </div>
                     <div>
-                        <span>Worldwide Free Shipping Over $100</span>
+                        <span>Worldwide Discount on Shipping Over $100</span>
                     </div>
                     <div className="flex items-center space-x-4">
                         <Link href="/help" className="hover:text-gray-800">

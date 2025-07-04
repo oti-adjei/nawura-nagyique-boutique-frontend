@@ -124,12 +124,13 @@ async function createStripeCheckoutList(
 }
 // Note the new async function signature for POST requests
 export async function POST(request: Request) {
-    let lineItemss: any
+    let lineItemss: Stripe.Checkout.SessionCreateParams.LineItem[]
   try {
     // Get the request origin for the return_url
     const origin = request.headers.get('origin') || 'http://localhost:3000';
 
-    const { items, currency = 'usd' } =  (await request.json()) as {
+    // const { items, currency = 'usd' } =  (await request.json()) as {
+    const { items } =  (await request.json()) as {
           items: CartItem[];
           currency?: string;
         };

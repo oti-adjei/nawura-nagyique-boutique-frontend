@@ -1,9 +1,7 @@
 'use client';
 
-import Header from "@/components/common/Header";
 import { CartItemm } from "../../components/cart/CartItem";
 import { CartSummary } from "../../components/cart/CartSummary";
-import Footer from "@/components/common/Footer";
 import { useCartStore } from "@/store/cart/useCart";
 
 

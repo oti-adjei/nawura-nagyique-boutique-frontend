@@ -1,6 +1,6 @@
 import { getStrapiMedia } from '@/lib/utils';
 import type { Collection } from '@/types/api'; // Adjust import path (ensure this type has 'id')
-import { Button } from '@mui/material';
+// import { Button } from '@mui/material';
 import Image from 'next/image'; // Using next/image is recommended
 import Link from 'next/link';
 
@@ -20,6 +20,7 @@ const Collections = ({ collections }: CollectionsProps) => (
       {collections.map((col) => (        // Use col.id for the key
         <div key={col.id} className="relative group aspect-[3/2] rounded overflow-hidden shadow-lg transition">
           {col.image ? (
+           
             <Image
               src={getStrapiMedia(col.image)}
               alt={col.title || 'Collection image'}

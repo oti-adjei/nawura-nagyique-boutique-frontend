@@ -46,7 +46,7 @@ const NewArrivals = ({ currentArrivals }: NewArrivalsProps) => {
               <div className="p-3 min-h-[120px] flex flex-col justify-between  ">
                 {/* The unique content of New Arrivals is preserved below */}
                 <div className="flex-grow min-h-[100px]">
-                  <p className="text-small text-main-text mb-1">Men's Wear</p>
+                  <p className="text-small text-main-text mb-1">Men&apos;s Wear</p>
 
                   {/* Added group-hover effect to the title to match the other section */}
                   <p className="text-sm font-medium text-gray-900 line-clamp-2 leading-snug group-hover:text-primary">

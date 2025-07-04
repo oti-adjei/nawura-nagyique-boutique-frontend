@@ -97,14 +97,14 @@ export default async function AboutPage() {
               <p className="text-gray-500">Images are loading...</p>
             </div>
           )}
-
+ƒ&
           {/* --- Text Content Column --- */}
           <div className="space-y-5">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-800">
               Who We <span className="text-primary">Are?</span>
             </h1>
             <p className="font-semibold text-gray-500 uppercase tracking-wider text-sm">
-              WE'RE HERE TO SERVE ONLY THE BEST PRODUCTS FOR YOU. ENRICHING YOUR HOMES WITH THE BEST ESSENTIALS.
+              WE&apos;RE HERE TO SERVE ONLY THE BEST PRODUCTS FOR YOU. ENRICHING YOUR HOMES WITH THE BEST ESSENTIALS.
             </p>
             {/* The first paragraph uses the description from your CMS */}
             <p className="text-gray-600 leading-relaxed">

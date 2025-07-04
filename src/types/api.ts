@@ -7,13 +7,13 @@ export interface Category {
   icon: string;
 }
 
-export interface DealProduct {
-  id: number; // Add ID
-  imageUrl: string;
-  name: string;
-  price: number;
-  originalPrice?: number; // Make optional if not always present
-}
+// export interface DealProduct {
+//   id: number; // Add ID
+//   imageUrl: string;
+//   name: string;
+//   price: number;
+//   originalPrice?: number; // Make optional if not always present
+// }
 
 export interface LegacyContent {
   image: { // Define the structure of the imageUrl object
@@ -64,22 +64,7 @@ interface Size {
   inStock: boolean;
 }
 
-// interface Product {
-//   id: number;
-//   documentId: string;
-//   title: string;
-//   description: string;
-//   price: number;
-//   availableColors?: Color[];
-//   sizes?: Size[];
-//   stock: number;
-//   isFeatured: boolean;
-//   createdAt: string;
-//   updatedAt: string;
-//   publishedAt: string;
-//   locale: string;
-//   slug: string;
-// }
+
 
 interface SEOMetadata {
   id: number;
@@ -115,12 +100,26 @@ interface HomepageData {
   Overview?: OverviewSectionData;
   seo_metadata?: SEOMetadata;
   products?: Product[];
-  localizations?: any[]; // You might want to define a more specific type for localizations if needed
+  localizations?: []; // You might want to define a more specific type for localizations if needed
 }
+
+// interface PaginationMeta {
+//   page: number;
+//   pageSize: number;
+//   pageCount: number;
+//   total: number;
+// }
+
+// interface CommonStrapiMeta {
+//   pagination?: PaginationMeta; // Optional pagination data
+//   // Add other common meta fields if you encounter them
+// }
+
 
 interface HomepageResponse {
   data: HomepageData | null; // 'data' can be the HomepageData object or null if the entry doesn't exist
-  meta: Record<string, any>; // 'meta' is an empty object in your example, but you can be more specific if needed
+  meta: Record<string, never>; // 'meta' is an empty object in your example, but you can be more specific if needed
+  //  meta: CommonStrapiMeta; 
 }
 
 export type {

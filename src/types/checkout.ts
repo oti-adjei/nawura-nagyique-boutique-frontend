@@ -30,7 +30,7 @@ export interface SelectOption {
   value: string; // A unique identifier for the option (e.g., "US", "CA", "12345")
   // You can optionally add a field to carry the full original data object
   // if you need more properties than just 'label' and 'value' in the parent.
-  originalData?: any;
+  originalData?: unknown;
 }
 
   export type PaymentMethod = 'bank' | 'paypal' | 'stripe' | 'cash';

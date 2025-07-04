@@ -268,9 +268,9 @@ const FilterOptions = ({ currentActiveFilters, onApplyFilters, onClearAllFilters
     });
   };
 
-  const handleClearPendingFilters = () => { // Clears only the pending selection
-    setPendingFilters({});
-  };
+  // const handleClearPendingFilters = () => { // Clears only the pending selection
+  //   setPendingFilters({});
+  // };
 
   // When 'Apply Filters' is clicked, notify parent with the pending filters
   const handleApplyClick = () => {

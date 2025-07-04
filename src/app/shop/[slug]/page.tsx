@@ -1,7 +1,7 @@
 // app/page.tsx (or your specific product page route)
 import ProductDisplay from '@/components/shop/product/ProductDisplay'; // Adjust path if needed
 import RelatedProducts from '@/components/shop/product/RelatedProducts'; // Adjust path if needed
-import Footer from '@/components/common/Footer';
+
 // import Header from '@/components/ui/Header';
 import { getProductBySlug } from '@/lib/api';
 import { Product, toDisplayProduct } from '@/types/product';
@@ -29,11 +29,10 @@ export default async function ProductPage({ params }: ProductPageParams) {
 
     return (
         <main className="bg-white">
-            {/* <Header /> */}
             <ProductDisplay productData={DP} />
             {/* RelatedProducts might need separate logic or dummy data too */}
             <RelatedProducts currentProductId={product.id} />
-            {/* <Footer /> */}
+
         </main>
     );
 }

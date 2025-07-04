@@ -2,14 +2,13 @@
 "use client";
 
 import { Key, useCallback, useState } from 'react';
-import Image from 'next/image';
+
 import { FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaShoppingCart, } from 'react-icons/fa';
 // FaCcVisa, FaCcMastercard, FaCcAmex
 import { IoIosArrowDown } from 'react-icons/io';
 import type { DisplayProduct } from '@/types/product'; // Adjust path if needed
 import type { CartAdditionItem } from '@/types/cart'; // Adjust path, add CartAdditionItem
 import AddToCartToast from '@/components/cart/AddToCartToast';
-import { getStrapiMedia } from '@/lib/utils';
 import { CartItem, useCartStore } from '@/store/cart/useCart';
 import { FaCcVisa, FaCcAmex, FaCcMastercard } from 'react-icons/fa6';
 import ProductImageGallery from './ProductImageGallery';
@@ -23,6 +22,8 @@ interface ProductDisplayProps {
 }
 
 export default function ProductDisplay({ productData }: ProductDisplayProps) {
+
+  console.log("ProductDisplay Props:", productData);
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -50,17 +51,12 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
   const [toastItem, setToastItem] = useState<CartAdditionItem | null>(null);
 
-  const handleThumbnailClick = (thumbUrl: string) => {
-    setCurrentImage(thumbUrl);
-  };
+  // const handleThumbnailClick = (thumbUrl: string) => {
+  //   setCurrentImage(thumbUrl);
+  // };
 
   const handleIncreaseQuantity = () => setQuantity((prev) => prev + 1);
   const handleDecreaseQuantity = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
-
-  const addToCartFunction = () => {
-    console.log("I HAVE BEEN ADDED TO CART")
-  }
 
   // --- ADD THIS: handleAddToCart function ---
   const handleAddToCart = useCallback(() => {
@@ -190,14 +186,15 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
         <ProductImageGallery
           productName={product.name}
           mainImage={product.imageUrl}
+          allImages={product.allImages || []}
           thumbnails={product.thumbnails || []}
         />
 
           {/* Product Info */}
           <div className="lg:w-1/2 mt-4 lg:mt-0">
-            <h1 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+            <h3 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
               {product.name}
-            </h1>
+            </h3>
 
             {/* Rating and Reviews */}
             {/* Assuming 'product' is available in your component's scope
@@ -314,7 +311,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
                 >
 
                   <FaShoppingCart className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Add to Cartttt
+                  Add to Cart
                 </button>
               </div>
 

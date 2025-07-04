@@ -3,7 +3,6 @@ import {
   getCategories,
   getNewArrivals,
   getDeals,
-  getFeatures,
   getCollections,
   getPromotionalBanner,
 } from "@/lib/api";

@@ -11,7 +11,8 @@ export default function SuccessPage() {
 
   // Stripe might add query parameters like payment_intent_client_secret, payment_intent, etc.
   const paymentIntentId = searchParams.get('payment_intent');
-  const clientSecret = searchParams.get('payment_intent_client_secret');
+  //TODO: Add code to handle client_secret if needed
+  // const clientSecret = searchParams.get('payment_intent_client_secret');
 
   useEffect(() => {
     // It's good practice to clear the cart once the user lands on the success page,

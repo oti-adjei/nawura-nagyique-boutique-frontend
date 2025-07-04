@@ -144,7 +144,7 @@ export default function SearchDialog({ isOpen, onClose }: SearchDialogProps) {
     if (searchTerm && results.length === 0) {
       return (
         <div className="p-6 text-center text-sm text-gray-500">
-          <p>No results found for "{searchTerm}"</p>
+          <p>No results found for &ldquo{searchTerm}&ldquo</p>
         </div>
       );
     }

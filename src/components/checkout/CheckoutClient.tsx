@@ -9,14 +9,14 @@ import OrderSummary from './OrderSummary';
 
 import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
 import { Elements } from '@stripe/react-stripe-js';
-import StripeCheckoutForm, { StripeCheckoutFormHandle } from './StripeCheckoutForm'; // Import handle type
-import LoadingSpinner from '@/components/common/LoadingSpinner';
+// import StripeCheckoutForm, { StripeCheckoutFormHandle } from './StripeCheckoutForm'; // Import handle type
+// import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useCartStore } from '@/store/cart/useCart';
 import SelectCombobox from './CountrySelectCombobox';
 import { PayBill } from './PayBill';
 import { PaypalPayBill } from './PayBilllPaypal';
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface CheckoutClientProps {
   initialShippingCost: number;
@@ -24,7 +24,7 @@ interface CheckoutClientProps {
 const CheckoutClient: React.FC<CheckoutClientProps> = ({
   initialShippingCost
 }) => {
-  const { items: cartItemsFromStore, clearCart } = useCartStore();
+  const { items: cartItemsFromStore } = useCartStore();
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: '',
     lastName: '',
@@ -51,7 +51,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const [formSubmissionMessage, setFormSubmissionMessage] = useState<string | null>(null); // For overall form submission status
   const [isSubmitting, setIsSubmitting] = useState(false); // For the main Pay Now button
 
-  const stripeFormRef = useRef<StripeCheckoutFormHandle>(null); // Ref for StripeCheckoutForm
+  // const stripeFormRef = useRef<StripeCheckoutFormHandle>(null); // Ref for StripeCheckoutForm
 
 
   const [countries, setCountries] = useState<SelectOption[]>([]);

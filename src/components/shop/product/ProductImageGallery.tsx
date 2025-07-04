@@ -20,15 +20,39 @@ import "yet-another-react-lightbox/plugins/thumbnails.css";
 interface ProductImageGalleryProps {
   productName: string;
   mainImage: string;
+  allImages?: string[]; // Optional: if you want to display all images
   thumbnails: string[];
 }
 
-export default function ProductImageGallery({ productName, mainImage, thumbnails }: ProductImageGalleryProps) {
-  const [currentImage, setCurrentImage] = useState(thumbnails?.[0] || mainImage);
+export default function ProductImageGallery({ productName, mainImage, allImages, thumbnails }: ProductImageGalleryProps) {
+
+  console.log("ProductImageGallery Props:", {
+    productName,
+    mainImage,
+    allImages,
+    thumbnails
+  });
+  const [currentImage, setCurrentImage] = useState(allImages?.[0] || mainImage);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
   const handleThumbnailClick = (thumbUrl: string) => {
-    setCurrentImage(thumbUrl);
+    //find the index of this thumbmail and set its allImages as the current image
+    // If allImages is provided, find the corresponding image
+   if (allImages && allImages.length > 0) {
+      const thumbIndex = thumbnails.findIndex((img) => img === thumbUrl);
+      if (thumbIndex !== -1 && thumbIndex < allImages.length) {
+        console.log(`Setting current image to: ${allImages[thumbIndex]}`);
+        setCurrentImage(allImages[thumbIndex]);
+      } else {
+        // Fallback: If for some reason the thumbnail isn't found or index is out of bounds,
+        // or if allImages isn't used, just use the thumbnail URL as the main image.
+        // This assumes thumbnails are also full-size or acceptable for main display.
+        setCurrentImage(thumbUrl);
+      }
+    } else {
+      // If allImages prop is not provided, we just use the thumbnail URL itself as the main image.
+      setCurrentImage(thumbUrl);
+    }
   };
 
   const lightboxSlides = thumbnails.map((thumb) => ({
@@ -42,15 +66,15 @@ export default function ProductImageGallery({ productName, mainImage, thumbnails
     <div className="lg:w-1/2 flex flex-col gap-4">
 
       {/* Main Image */}
-      <div className="relative w-full bg-gray-100 rounded-lg overflow-hidden shadow-sm aspect-[3/4]">
+      <div className="relative w-full rounded-lg overflow-hidden shadow-sm aspect-square">
         <Image
           src={getStrapiMedia(currentImage)}
           alt={productName}
           fill
-          className="object-cover cursor-pointer"
+          className="object-contain cursor-pointer"
           priority
           // --- FIX: Add a precise 'sizes' prop to prevent blurriness ---
-          sizes="(max-width: 1024px) 90vw, 45vw"
+          sizes="(max-width: 1024px) 80vw, 45vw"
           onClick={() => {
             const currentIndex = thumbnails.findIndex((thumb) => thumb === currentImage);
             setLightboxIndex(currentIndex > -1 ? currentIndex : 0);

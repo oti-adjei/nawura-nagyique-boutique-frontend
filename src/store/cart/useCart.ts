@@ -27,7 +27,7 @@ export const useCartStore = create<CartState>()(
             items: [],
 
             addToCart: (item: CartItem) => {
-                const quantity = item.quantity ?? 1; 
+                // const quantity = item.quantity ?? 1; 
 
                 const existingItem = get().items.find(
                     (i) => i.id === item.id && i.selectedSize === item.selectedSize
