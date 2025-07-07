@@ -27,14 +27,14 @@ const AddToCartToast: React.FC<AddToCartToastProps> = ({
 }) => {
   const [show, setShow] = useState(false);
 
-    const handleClose = () => {
+    // --- FIX 2: Wrap the function definition in useCallback ---
+  const handleClose = useCallback(() => {
     setShow(false);
-    // Call the parent's onClose after the transition ends (or slightly before)
-    // Using a timeout ensures the parent state updates after visual closing starts
+    // Call the parent's onClose after the transition ends
     setTimeout(() => {
         onClose();
     }, 300); // Match transition duration
-  };
+  }, [onClose]); 
 
   // Effect to show the toast when 'item' changes
   useEffect(() => {

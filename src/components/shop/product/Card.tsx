@@ -1,10 +1,10 @@
 // components/ProductCard.tsx (Updated)
 import Image from 'next/image';
 import { FaRegHeart } from 'react-icons/fa';
-import type { RelatedProduct } from '@/types/product'; // Adjust path if needed
+import type { DisplayProduct } from '@/types/product'; // Adjust path if needed
 
 interface ProductCardProps {
-  product: RelatedProduct;
+  product: DisplayProduct;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ product }) => {

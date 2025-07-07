@@ -17,7 +17,7 @@ async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'D
 
   const url = `${SURL}/api/${endpoint}`;
 
-  console.log("url is " + url)
+  //console.log("url is " + url)
   const headers: HeadersInit = {};
 
   if (token) {
@@ -66,7 +66,7 @@ export function getStrapiMedia(url?: string): string {
   // If the URL is already absolute (starts with http), return as is
   if (url.startsWith('http')) return url;
 
-  console.log("the url for Image is " +`${baseUrl}${url}`)
+  //console.log("the url for Image is " +`${baseUrl}${url}`)
 
   return `${baseUrl}${url}`;
 }

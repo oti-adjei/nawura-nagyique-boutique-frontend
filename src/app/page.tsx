@@ -33,13 +33,13 @@ export default async function Home() {
 
   const data = homepageData?.data;
 
-  console.log('Homepage data fetched in Home:', data);
-  console.log('Hero data fetched in Hero:', data.Hero);
-  // console.log('Categories fetched:', categories);
-  // console.log('New Arrivals fetched:', newArrivals);
-  // console.log('Deals fetched:', deals);
-  // console.log('Features fetched:', features);
-  // console.log('Features fetched:', features);
+  //console.log('Homepage data fetched in Home:', data);
+  //console.log('Hero data fetched in Hero:', data.Hero);
+  // //console.log('Categories fetched:', categories);
+  // //console.log('New Arrivals fetched:', newArrivals);
+  // //console.log('Deals fetched:', deals);
+  // //console.log('Features fetched:', features);
+  // //console.log('Features fetched:', features);
 
   if (!data) {
     return <div>Error loading basic homepage data.</div>;

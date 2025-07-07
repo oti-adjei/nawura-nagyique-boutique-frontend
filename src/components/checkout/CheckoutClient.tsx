@@ -1,16 +1,9 @@
-// components/checkout/CheckoutClient.tsx
 "use client";
 
-import { useState, useMemo, useCallback, useEffect, useRef } from 'react'; // Added useRef
+import { useState, useMemo, useCallback, useEffect } from 'react'; // Added useRef
 import type { CartItem as CheckoutCartItem, CheckoutFormData, PaymentMethod, SelectOption } from '@/types/checkout';
 import { Country as CountryService, State as StateService, City as CityService, ICountry, IState, ICity } from 'country-state-city';
 import OrderSummary from './OrderSummary';
-// import { Country } from '@/types/checkout';
-
-import { loadStripe, StripeElementsOptions } from '@stripe/stripe-js';
-import { Elements } from '@stripe/react-stripe-js';
-// import StripeCheckoutForm, { StripeCheckoutFormHandle } from './StripeCheckoutForm'; // Import handle type
-// import LoadingSpinner from '@/components/common/LoadingSpinner';
 import { useCartStore } from '@/store/cart/useCart';
 import SelectCombobox from './CountrySelectCombobox';
 import { PayBill } from './PayBill';
@@ -44,14 +37,15 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   const [appliedDiscount, setAppliedDiscount] = useState(0);
   const [shippingCost, setShippingCost] = useState(initialShippingCost);
 
+  // New state to track shipping calculation status
+  const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
 
-  const [clientSecret, setClientSecret] = useState<string | null>(null);
+
+  // const [clientSecret, setClientSecret] = useState<string | null>(null);
   // const [isStripeLoading, setIsStripeLoading] = useState(false);
   // const [stripeError, setStripeError] = useState<string | null>(null); // For errors initializing Stripe
   const [formSubmissionMessage, setFormSubmissionMessage] = useState<string | null>(null); // For overall form submission status
   const [isSubmitting, setIsSubmitting] = useState(false); // For the main Pay Now button
-
-  // const stripeFormRef = useRef<StripeCheckoutFormHandle>(null); // Ref for StripeCheckoutForm
 
 
   const [countries, setCountries] = useState<SelectOption[]>([]);
@@ -121,6 +115,90 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   }, [formData.state, formData.country]);
 
 
+
+   // NEW: Function to calculate shipping and taxes from Canada
+  const calculateShippingAndTaxes = useCallback(async (country: string, state: string, city: string): Promise<number> => {
+    //console.log(`Calculating shipping for ${city}, ${state}, ${country}`);
+    // This is a simulation. In a real app, you would make an API call here.
+    // e.g., await fetch('/api/shipping-rate', { method: 'POST', body: JSON.stringify({ country, state, city }) });
+    
+    // Simulate network delay
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    let calculatedCost = 0;
+    const baseShipping = 15.00; // Base cost for shipping from Canada
+
+    // Country-based cost adjustments
+    if (country === 'CA') { // Domestic
+      calculatedCost = baseShipping; 
+    } else if (country === 'US') { // To USA
+      calculatedCost = baseShipping + 10.00;
+    } else { // International
+      calculatedCost = baseShipping + 25.00;
+    }
+
+    // Tax calculation simulation
+    let taxRate = 0;
+    if (country === 'CA') {
+      // Provincial Sales Tax (PST/GST/HST) simulation for Canada
+      const provinceTaxes: { [key: string]: number } = {
+        'ON': 0.13, 'BC': 0.12, 'NS': 0.15, 'NB': 0.15, 'NL': 0.15,
+        'PE': 0.15, 'QC': 0.14975, 'MB': 0.12, 'SK': 0.11
+      };
+      taxRate = provinceTaxes[state] || 0.05; // Default to 5% GST if not specified
+    } else {
+      // Simulate flat 5% customs/duties for international shipments
+      taxRate = 0.05;
+    }
+    //use city tax rate and add to state adn country tax
+    if(city === 'Montreal'){
+      taxRate += 0.02;
+    } else if(city === 'Vancouver'){
+      taxRate += 0.03;
+    } else if(city === 'Toronto'){
+      taxRate += 0.07;
+    } else if(city === 'Ottawa'){
+      taxRate += 0.06;
+    } else if(city === 'Calgary'){
+      taxRate += 0.01;
+    } else if(city === 'Edmonton'){
+      taxRate += 0.08;
+    } else if(city === 'Winnipeg'){
+      taxRate += 0.04;
+    } else {
+      // Default to 5% GST for other cities
+      taxRate = 0.05;
+    }
+    
+    
+    const taxAmount = calculatedCost * taxRate;
+    const finalCost = calculatedCost + taxAmount;
+
+    //console.log(`Base: $${baseShipping}, Adjusted: $${calculatedCost}, Tax: $${taxAmount.toFixed(2)}, Final: $${finalCost.toFixed(2)}`);
+    return parseFloat(finalCost.toFixed(2));
+  }, []);
+
+  // NEW: useEffect to trigger shipping calculation
+  useEffect(() => {
+    // Only calculate if all location fields are selected
+    if (formData.country && formData.state && formData.city) {
+      setIsCalculatingShipping(true);
+      calculateShippingAndTaxes(formData.country, formData.state, formData.city)
+        .then(newCost => {
+          setShippingCost(newCost);
+        })
+        .catch(error => {
+          console.error("Failed to calculate shipping:", error);
+          // Optionally, set a default or show an error
+          setShippingCost(initialShippingCost);
+        })
+        .finally(() => {
+          setIsCalculatingShipping(false);
+        });
+    }
+  }, [formData.city, formData.state, formData.country, calculateShippingAndTaxes, initialShippingCost]);
+
+
   const handleCountrySelect = (option: SelectOption | null) => {
     setFormData(prevData => ({
       ...prevData,
@@ -162,7 +240,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   const handleApplyDiscount = useCallback(() => {
     // Basic discount logic simulation
-    console.log("Applying discount code:", discountCode);
+    //console.log("Applying discount code:", discountCode);
     if (discountCode.toUpperCase() === 'DISCOUNT10') {
       setAppliedDiscount(10.00); // Apply a $10 discount
       alert("Discount applied!");
@@ -175,13 +253,13 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
   // UPDATED handleSubmit
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting) return;
+    if (isSubmitting || isCalculatingShipping) return; // Also block submission while calculating shipping
 
     setIsSubmitting(true);
     setFormSubmissionMessage(null);
 
     //console log form data
-    console.log("Form Data:", formData);
+    //console.log("Form Data:", formData);
 
    if (selectedPaymentMethod === 'stripe') {
       // Instead of trying to render here...
@@ -194,63 +272,12 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       setIsPaypalPayBillOpen(true);
       return; // Stop the rest of the function from running for now
     }
-      // For PayPal, you would typically redirect to a PayPal checkout page.
-    // finally {
-    //   setIsSubmitting(false); // Reset submitting state after submission
-    // }
-
-
-   /* if (selectedPaymentMethod === 'stripe') {
-      if (!stripeFormRef.current) {
-        setFormSubmissionMessage("Stripe form is not ready. Please wait.");
-        setIsSubmitting(false);
-        return;
-      }
-      if (!clientSecret) {
-        setFormSubmissionMessage("Stripe payment is not initialized. Please ensure card details section is loaded.");
-        setIsSubmitting(false);
-        return;
-      }
-
-      // Trigger Stripe payment
-      const stripeResult = await stripeFormRef.current.triggerSubmit();
-
-      if (stripeResult.success) {
-        // Stripe.js will handle the redirect to the success URL if payment is fully 'succeeded'.
-        // If status is 'processing', it might redirect or user might stay on page.
-        // The StripeCheckoutForm's internal message state will show "Payment Succeeded! Redirecting..." or "Processing..."
-        // We don't strictly need to set a message here unless the Stripe form itself doesn't update user.
-        setFormSubmissionMessage(`Stripe payment status: ${stripeResult.paymentIntentStatus}. Follow prompts or wait for redirection.`);
-        // Clear cart is handled inside StripeCheckoutForm on 'succeeded' or by webhook.
-      } else {
-        setFormSubmissionMessage(stripeResult.error || "Stripe payment failed. Please check your details or try another card.");
-      }
-    } else {
-      // Handle other payment methods
-      console.log("Form Submitted for non-Stripe payment!");
-      const orderData = {
-        personalInfo: formData,
-        paymentMethod: selectedPaymentMethod,
-        items: cartItemsFromStore,
-        discountCodeApplied: discountCode,
-        discountAmount: appliedDiscount,
-        shipping: shippingCost,
-        total: total,
-        // ... other data
-      };
-      console.log("Order Data:", orderData);
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      setFormSubmissionMessage(`Order placed successfully with ${selectedPaymentMethod}!`);
-      clearCart(); // Clear cart for non-Stripe successful simulated payments
-    }
-    setIsSubmitting(false);*/
   };
 
   const subtotal = useMemo(() => cartItemsFromStore.reduce((sum, item) => sum + item.price * item.quantity, 0), [cartItemsFromStore]);
   const total = useMemo(() => subtotal + shippingCost - appliedDiscount, [subtotal, shippingCost, appliedDiscount]);
 
-  const stripeElementsOptions: StripeElementsOptions | undefined = clientSecret ? { clientSecret, appearance: { theme: 'stripe' } } : undefined;
+  // const stripeElementsOptions: StripeElementsOptions | undefined = clientSecret ? { clientSecret, appearance: { theme: 'stripe' } } : undefined;
 
   if (cartItemsFromStore.length === 0) { /* ... empty cart message ... */ }
 
@@ -354,21 +381,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                     </div>
                   </button>
                 ))}
-
-                {/*
-                {selectedPaymentMethod === 'stripe' && (
-                  <div className="mt-6 border-t pt-6">
-                    <h3 className="text-md font-semibold mb-3">Enter Card Details (via Stripe)</h3>
-                    {isStripeLoading && <div className="flex items-center justify-center p-4"><LoadingSpinner /><p className="ml-2">Initializing...</p></div>}
-                    {stripeError && <div className="text-red-500 p-3 rounded mb-4">{stripeError}</div>}
-                    {clientSecret && stripeElementsOptions && !isStripeLoading && !stripeError && (
-                      <Elements options={stripeElementsOptions} stripe={stripePromise}>
-                        <StripeCheckoutForm ref={stripeFormRef} /> 
-                      </Elements>
-                    )}
-                  </div>
-                )}
-                */}
   
               </div>
               {/* Cancellation Policy */}

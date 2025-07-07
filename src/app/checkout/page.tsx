@@ -1,6 +1,5 @@
 // app/checkout/page.tsx
 import CheckoutClient from '@/components/checkout/CheckoutClient'; // Adjust path
-import type { CartItem } from '@/types/checkout'; // Adjust path
 import Link from 'next/link';
 
 export default async function CheckoutPage() {

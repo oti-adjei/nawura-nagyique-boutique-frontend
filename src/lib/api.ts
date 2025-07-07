@@ -17,7 +17,7 @@ import qs from 'qs';
 export async function getHomepageContent() {
   try {
     const data = await fetchStrapi('homepage?populate[Hero][populate]=imageUrl&populate[Overview][populate]=image&populate[seo_metadata][populate]&populate[products][populate]');
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -36,7 +36,7 @@ export async function getHomepageContent() {
 export async function fetchAboutPage(){
   try {
     const data = await fetchStrapi('about?populate[History][populate]=images');
-    console.log("API hitting about is " + JSON.stringify(data));
+    //console.log("API hitting about is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -55,7 +55,7 @@ export async function fetchAboutPage(){
 
 
 export async function getCategories(): Promise<Category[]> {
-  console.log("Fetching Categories...");
+  //console.log("Fetching Categories...");
   /*
   // UNCOMMENT THIS BLOCK TO FETCH FROM STRAPI
   if (!STRAPI_URL) throw new Error("Strapi URL not configured.");
@@ -94,11 +94,11 @@ export async function getCategories(): Promise<Category[]> {
 
 
 export async function getNewArrivals(): Promise<Product[]> {
-  console.log("Fetching New Arrivals...");
+  //console.log("Fetching New Arrivals...");
 
   try {
     const data = await fetchStrapi('products?populate=*&sort=publishedAt:desc&pagination[limit]=5');
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -119,7 +119,7 @@ export async function getNewArrivals(): Promise<Product[]> {
 export async function getDeals() {
   try {
     const data = await fetchStrapi('products?filters[isFeatured][$eq]=true&populate=*');
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -138,7 +138,7 @@ export async function getDeals() {
 
 
 export async function getPromotionalBanner(): Promise<PromotionalBanner> {
-  console.log("Fetching Promotional Banner...");
+  //console.log("Fetching Promotional Banner...");
   return {
     image: '/uploads/Background_2ffd65f716.png',
     title: 'Latest Exclusive Summer Collection',
@@ -148,7 +148,7 @@ export async function getPromotionalBanner(): Promise<PromotionalBanner> {
 
 
 export async function getCollections(): Promise<Collection[]> {
-  console.log("Fetching Collections...");
+  //console.log("Fetching Collections...");
   return [
     { id: 301, title: "Women’s Collection", image: '/uploads/women_fe7af95179.png' },
     { id: 302, title: "Kid’s Collection", image: '/uploads/13_jpg_17583051ec.png' },
@@ -158,7 +158,7 @@ export async function getCollections(): Promise<Collection[]> {
 
 
 export async function getFeatures(): Promise<Feature[]> {
-  console.log("Fetching Features...");
+  //console.log("Fetching Features...");
   return [
     { id: 401, title: 'Free Shipping', icon: '/icons/free-shipping.png' },
     { id: 402, title: '24x7 Support', icon: '/icons/support.png' },
@@ -171,7 +171,7 @@ export async function getProducts() {
 
   try {
     const data = await fetchStrapi('products?populate=*');
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -191,12 +191,12 @@ export async function getProducts() {
 
 // --- Your Fetch Function ---
 export async function getProductBySlug(slug: string): Promise<Product | null> {
-  console.log(`Attempting to fetch product for slug: ${slug} (USING DUMMY DATA)`);
+  //console.log(`Attempting to fetch product for slug: ${slug} (USING DUMMY DATA)`);
 
 
   try {
     const data = await fetchStrapi(`products/${slug}?populate=*`);
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 
@@ -205,7 +205,7 @@ export async function getProductBySlug(slug: string): Promise<Product | null> {
       return null; // Or handle this case as needed
     }
 
-    console.log("API slug  is " + JSON.stringify(attributes));
+    //console.log("API slug  is " + JSON.stringify(attributes));
 
     return attributes; // Return the entire data object since your content is directly under 'data'
   } catch (error) {
@@ -220,15 +220,15 @@ export async function getRelatedProducts(
   currentProductId: string | number,
   limit: number = 5 // Default limit for related items
 ) {
-  console.log(`Fetching related products for ID: ${currentProductId} (USING DUMMY DATA)`);
+  //console.log(`Fetching related products for ID: ${currentProductId} (USING DUMMY DATA)`);
   try {
     // First, get the reference product with its category
     const referenceProduct = await fetchStrapi(`products/${currentProductId}?populate=*`);
-    console.log("Reference Product: ", referenceProduct);
+    //console.log("Reference Product: ", referenceProduct);
     const categoryId = await referenceProduct.data.category.id;
     const tagIds= referenceProduct.data.tags.data ?  await referenceProduct.data.tags.data.map((tag: { id: unknown
       ; }) => tag.id): [];
-    console.log("Tag Ids: ", tagIds)
+    //console.log("Tag Ids: ", tagIds)
 
 
     // Then, find other products with the same category and tags
@@ -255,7 +255,7 @@ export async function getRelatedProducts(
 
     const data = await fetchStrapi(`products?${query}`);
     // const data = await fetch(`http://localhost:1337/api/products?${query}&populate=*`);
-    console.log("API hitting is " + JSON.stringify(data));
+    //console.log("API hitting is " + JSON.stringify(data));
 
     const attributes = data?.data; // Adjusted based on your previous response structure
 

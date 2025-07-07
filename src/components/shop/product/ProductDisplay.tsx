@@ -1,7 +1,7 @@
 // components/shop/product/ProductDisplay.tsx
 "use client";
 
-import { Key, useCallback, useState } from 'react';
+import {  useCallback, useState } from 'react';
 
 import { FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaShoppingCart, } from 'react-icons/fa';
 // FaCcVisa, FaCcMastercard, FaCcAmex
@@ -23,7 +23,7 @@ interface ProductDisplayProps {
 
 export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
-  console.log("ProductDisplay Props:", productData);
+  //console.log("ProductDisplay Props:", productData);
 
   const renderStars = (rating: number) => {
     const stars = [];
@@ -44,10 +44,10 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
   };
 
   const product = productData;
-  console.log("product in displaiy " + JSON.stringify(product))
+  //console.log("product in displaiy " + JSON.stringify(product))
   const [selectedSize, setSelectedSize] = useState<string | number>(product.sizes?.[0] ?? '');
   const [quantity, setQuantity] = useState<number>(1);
-  const [currentImage, setCurrentImage] = useState<string>(product.imageUrl);
+  // const [currentImage, setCurrentImage] = useState<string>(product.imageUrl);
 
   const [toastItem, setToastItem] = useState<CartAdditionItem | null>(null);
 
@@ -60,7 +60,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
   // --- ADD THIS: handleAddToCart function ---
   const handleAddToCart = useCallback(() => {
-    console.log("handleAddToCart FIRED!");
+    //console.log("handleAddToCart FIRED!");
     // Access the Zustand action
     // const { addToCart } = useCartStore.getState(); // Or use the hook if preferred for reactivity
 
@@ -88,7 +88,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
     const itemForToast: CartAdditionItem = {
       name: cartItemToAdd.name,
       price: cartItemToAdd.price,
-      imageUrl: currentImage, // Use the visually current image for the toast
+      imageUrl: product.imageUrl, // Use the visually current image for the toast
       color: cartItemToAdd.colors?.[0], // Or selected color if you implement that
       size: cartItemToAdd.selectedSize, // This is now a string
       // quantity: cartItemToAdd.quantity, // Add if your toast displays quantity
@@ -97,49 +97,8 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
     // Show the toast
     setToastItem(itemForToast);
 
-    // const cartItem = {
-    //   id: product.id, // Assuming product has an id
-    //   name: product.name,
-    //   price: product.price,
-    //   imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
-    //   quantity: quantity,
-    //   size: selectedSize,
-    //   // Add other necessary fields for your cart
-    // };
+  }, [product, quantity, selectedSize, setToastItem]);
 
-    // addToCart(cartItem); // Call your Zustand action
-    // console.log(`Adding ${quantity} x ${product.name} (Size: ${selectedSize}) to cart via Zustand`, cartItem);
-
-    // // Toast logic
-    // const itemForToast: CartAdditionItem = {
-    //   name: product.name,
-    //   price: product.price,
-    //   imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
-    //   color: product.colors?.[0],
-    //   size: selectedSize,
-    // };
-    // setToastItem(itemForToast);
-
-  }, [product, quantity, selectedSize, currentImage, setToastItem]);
-  // const handleAddToCart = useCallback(() => {
-  //   // 1. --- Replace this with your ACTUAL Add to Cart logic ---
-  //   console.log(`Adding ${quantity} x ${product.name} (Size: ${selectedSize}) to cart`);
-  //   // Example: addToCartContext({ productId: product.id, quantity, size: selectedSize });
-
-  //   // 2. --- Prepare item data for the toast ---
-  //   const itemForToast: CartAdditionItem = {
-  //     name: product.name,
-  //     price: product.price,
-  //     // Use a relevant image, maybe the current main one or first thumbnail
-  //     imageUrl: currentImage ?? product.thumbnails?.[0] ?? product.imageUrl,
-  //     color: product.colors?.[0], // Add color if available/selected
-  //     size: selectedSize,
-  //   };
-
-  //   // 3. --- Show the toast ---
-  //   setToastItem(itemForToast);
-
-  // }, [product, quantity, selectedSize, currentImage]); // Add dependencie
 
 
     return (
@@ -148,41 +107,7 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
         {/* Changed main flex direction for better mobile layout */}
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 xl:gap-16">
-         {/* --- REPLACED: Use the new dedicated component --- */}
-          {/* Image Gallery 
-        {/* Order adjusted for mobile: Main image first, then thumbnails 
-        <div className="lg:w-1/2 flex flex-col gap-4">
-           Main Image 
-           <div className="relative  w-full bg-gray-100 rounded overflow-hidden shadow-sm aspect-[3/4] lg:aspect-auto lg:h-full lg:flex-grow">
-            <Image
-              src={getStrapiMedia(currentImage)}
-              alt={product.name}
-              fill
-              style={{ objectFit: 'cover' }}
-              priority
-              sizes="(max-width: 1024px) 90vw, 45vw" // Adjusted sizes
-            />
-          </div>
-          {/* Thumbnails 
-          <div className="flex gap-3 justify-center lg:justify-start">
-            {product.thumbnails?.map((thumb, index) => (
-              <button
-                key={index}
-                onClick={() => handleThumbnailClick(thumb)}
-                // Adjusted size for better mobile feel
-                className={`relative w-16 h-20 sm:w-[70px] sm:h-[93px] rounded overflow-hidden border-2 ${currentImage === thumb ? 'border-gray-700' : 'border-transparent'} hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-all`}
-              >
-                <Image
-                  src={getStrapiMedia(thumb)}
-                  alt={`Thumbnail ${index + 1}`}
-                  fill
-                  style={{ objectFit: 'cover' }}
-                  sizes="80px"
-                />
-              </button>
-            ))}
-          </div>
-        </div> */}
+        
         <ProductImageGallery
           productName={product.name}
           mainImage={product.imageUrl}

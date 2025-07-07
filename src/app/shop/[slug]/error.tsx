@@ -1,25 +1,23 @@
-"use client"
+'use client'; // Error components must be Client Components
 
 import { useEffect } from 'react';
 
-interface ErrorProps {
-  error: Error;
+export default function Error({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
   reset: () => void;
-}
-
-export default function ShopError({ error, reset }: ErrorProps) {
+}) {
   useEffect(() => {
-    console.error('Shop page error:', error);
+    // Log the error to an error reporting service
+    console.error(error);
   }, [error]);
 
   return (
-    <div className="flex flex-col items-center justify-center h-64 text-red-600">
-      <h2 className="text-xl font-semibold">Something went wrong.</h2>
-      <p className="mt-2">{error.message}</p>
-      <button
-        onClick={() => reset()}
-        className="mt-4 px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600"
-      >
+    <div>
+      <h2>Something went wrong!</h2>
+      <button onClick={() => reset()}>
         Try again
       </button>
     </div>

@@ -5,7 +5,6 @@ import Image from 'next/image';
 // import { Heart } from 'lucide-react';
 import LikeButton from './LikeButton';
 import { DisplayProduct } from '@/types/product';
-import { useCartStore } from '@/store/cart/useCart';
 import { useState } from 'react';
 import { getStrapiMedia } from '@/lib/utils';
 
@@ -16,16 +15,9 @@ interface ProductCardProps {
 
 
 export default function ProductCard({ product }: ProductCardProps) {
-  const { name, price, imageUrl, outOfStock, description, sizes, originalPrice } = product;
+  const { name,  imageUrl, outOfStock, description, sizes,  } = product;
+  // const { name, price, imageUrl, outOfStock, description, sizes, originalPrice } = product;
   const [selectedSize, setSelectedSize] = useState('');
-  const addToCart = useCartStore((state) => state.addToCart);
-
-  
-
-  const handleAddToCart = () => {
-    if (!selectedSize) return alert('Please select a size before adding to cart');
-    addToCart({ ...product, selectedSize, quantity: 1 });
-  };
 
   return (
     <div className="relative h-[480px] group rounded-xl overflow-hidden shadow-[0 1px 3px 0 rgb(0 0 0 / 0.75)] hover:shadow-sm transition-all bg-white-300">

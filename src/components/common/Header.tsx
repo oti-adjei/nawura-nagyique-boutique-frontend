@@ -37,17 +37,6 @@ const Header = () => {
         setIsMobileMenuOpen(!isMobileMenuOpen);
     };
 
-    // const [location, setLocation] = useState('New York');
-    const [showPopup, setShowPopup] = useState(false);
-
-    // const togglePopup = () => {
-    //     setShowPopup(!showPopup);
-    // };
-
-    // const handleLocationChange = (newLocation: string) => {
-    //     setLocation(newLocation);
-    //     setShowPopup(false);
-    // };
 
     const handleLocationSelect = (selectedCountry: CountryData) => {
         setCountryAndCurrency(selectedCountry);

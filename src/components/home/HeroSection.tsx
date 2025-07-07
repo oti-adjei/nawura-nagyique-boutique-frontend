@@ -16,7 +16,7 @@ interface HeroProps {
 const HeroSection = ({ hero }: HeroProps) => {
 
   if (!hero) {
-    console.log("inside my hero is " + hero);
+    //console.log("inside my hero is " + hero);
 
     return (
       <div className="w-full h-[500px] md:h-[600px] flex items-center justify-center">

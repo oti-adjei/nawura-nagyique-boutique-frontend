@@ -11,7 +11,7 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
   // Destructure properties from the legacyContent object
   const { title, image, description, cta } = legacyContent;
 
-  // console.log("image is image" + JSON.stringify(image))
+  // //console.log("image is image" + JSON.stringify(image))
 
   // Safely access image URL from Strapi
   const imageUrl = image?.url ? process.env.NEXT_PUBLIC_STRAPI_URL + image.url : null;

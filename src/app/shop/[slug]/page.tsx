@@ -1,38 +1,29 @@
-// app/page.tsx (or your specific product page route)
-import ProductDisplay from '@/components/shop/product/ProductDisplay'; // Adjust path if needed
-import RelatedProducts from '@/components/shop/product/RelatedProducts'; // Adjust path if needed
-
-// import Header from '@/components/ui/Header';
-import { getProductBySlug } from '@/lib/api';
-import { Product, toDisplayProduct } from '@/types/product';
+// src/app/shop/[slug]/page.tsx
 import { notFound } from 'next/navigation';
+import ProductDisplay from '@/components/shop/product/ProductDisplay';
+import RelatedProducts from '@/components/shop/product/RelatedProducts';
+import { getProductBySlug } from '@/lib/api';
+import { toDisplayProduct } from '@/types/product';
 
+export default async function ProductPage(
+  props: {
+    params: Promise<{ slug: string }>;
+    // searchParams?: Promise<Record<string, string | string[] | undefined>>;
+  }
+) {
+  const { slug } = await props.params;
+  // If you use searchParams:
+  // const search = await props.searchParams;
 
+  const product = await getProductBySlug(slug);
+  if (!product) notFound();
 
-interface ProductPageParams {
-    params: { slug: string };
+  const displayProduct = toDisplayProduct(product);
+  return (
+    <main className="bg-white">
+      <ProductDisplay productData={displayProduct} />
+      <RelatedProducts currentProductId={product.id} />
+    </main>
+  );
 }
 
-export default async function ProductPage({ params }: ProductPageParams) {
-     // --- FIX: Await params before accessing slug ---
-       const resolvedParams = await params;
-    const { slug } = resolvedParams;
-    const product: Product | null = await getProductBySlug(slug);
-    console.log(" the product in Product Page is " + JSON.stringify(product, null, 2));
-
-    // Handle case where product is not found (important for real API later)
-    if (!product) {
-        notFound(); // Or render a specific "Not Found" component
-    }
-    const DP=toDisplayProduct(product);
-    console.log(" the converted Product to display is " + JSON.stringify(DP));
-
-    return (
-        <main className="bg-white">
-            <ProductDisplay productData={DP} />
-            {/* RelatedProducts might need separate logic or dummy data too */}
-            <RelatedProducts currentProductId={product.id} />
-
-        </main>
-    );
-}

@@ -26,12 +26,12 @@ interface ProductImageGalleryProps {
 
 export default function ProductImageGallery({ productName, mainImage, allImages, thumbnails }: ProductImageGalleryProps) {
 
-  console.log("ProductImageGallery Props:", {
+  /*console.log("ProductImageGallery Props:", {
     productName,
     mainImage,
     allImages,
     thumbnails
-  });
+  });*/
   const [currentImage, setCurrentImage] = useState(allImages?.[0] || mainImage);
   const [lightboxIndex, setLightboxIndex] = useState(-1);
 
@@ -41,7 +41,7 @@ export default function ProductImageGallery({ productName, mainImage, allImages,
    if (allImages && allImages.length > 0) {
       const thumbIndex = thumbnails.findIndex((img) => img === thumbUrl);
       if (thumbIndex !== -1 && thumbIndex < allImages.length) {
-        console.log(`Setting current image to: ${allImages[thumbIndex]}`);
+        //console.log(`Setting current image to: ${allImages[thumbIndex]}`);
         setCurrentImage(allImages[thumbIndex]);
       } else {
         // Fallback: If for some reason the thumbnail isn't found or index is out of bounds,
@@ -114,7 +114,7 @@ export default function ProductImageGallery({ productName, mainImage, allImages,
 
         // Use the render prop to optimize images within the lightbox
         render={{
-          slide: ({ slide, rect }) => (
+          slide: ({ slide }) => (
             <Image
               src={slide.src}
               alt={slide.alt || ""}

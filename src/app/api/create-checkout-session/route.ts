@@ -118,7 +118,7 @@ async function createStripeCheckoutList(
       };
     })
   );
-  console.log('lineItems', lineItems);
+  //console.log('lineItems', lineItems);
 
   return lineItems;
 }

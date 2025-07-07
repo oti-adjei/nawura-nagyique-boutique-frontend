@@ -69,7 +69,7 @@
 //   const handleApplyFilters = () => {
 //     // This is where you would make your API call to Strapi.
 //     // The `activeFilters` object contains the exact data you need.
-//     console.log('APPLYING FILTERS (sending to API):', activeFilters);
+//     //console.log('APPLYING FILTERS (sending to API):', activeFilters);
 
 //     // Example of what your API call might look like:
 //     // const queryParams = new URLSearchParams();
@@ -82,7 +82,7 @@
 //     // });
 //     // fetch(`https://your-strapi-endpoint/products?${queryParams.toString()}`)
 //     //   .then(res => res.json())
-//     //   .then(data => console.log('Products loaded:', data));
+//     //   .then(data => //console.log('Products loaded:', data));
 
 //     alert('Check the console to see the filter object that would be sent to the API!');
 //   };

@@ -16,7 +16,7 @@ export default function FilteredProductDisplay({ initialProducts }: FilteredProd
   // This state holds the filters that are ACTUALLY applied to the products
   const [appliedFilters, setAppliedFilters] = useState<ActiveFilters>({});
 
-  console.log('ProductCard rendered with product:', initialProducts);
+  //console.log('ProductCard rendered with product:', initialProducts);
 
   // --- FILTERING LOGIC ---
   const filteredProducts = useMemo(() => {

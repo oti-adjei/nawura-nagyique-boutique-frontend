@@ -39,7 +39,7 @@ export const PaypalPayBill = ({ open, onClose, }: PaypalPayBillProps) => {
             })
                 .then((res) => res.json())
                 .then((data) => {
-                    console.log("Received data from API:", data);
+                    //console.log("Received data from API:", data);
                     if (data.clientSecret) {
                         setClientSecret(data.clientSecret);
                     }
