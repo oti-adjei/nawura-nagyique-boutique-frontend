@@ -17,7 +17,7 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
   const imageUrl = image?.url ? process.env.NEXT_PUBLIC_STRAPI_URL + image.url : null;
 
   return (
-   <section className="w-full my-14 ">
+   <section className="w-full my-14 py-20 bg-[#FCEEF5]">
   <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto gap-y-10 md:gap-x-16">
     
     {/* Left: Image */}

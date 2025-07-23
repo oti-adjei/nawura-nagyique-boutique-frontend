@@ -60,7 +60,10 @@ export default async function Home() {
       <div className="px-5 lg:px-[130px]">
       {categories && <Categories categories={categories} />}
       {newArrivals && <NewArrivals currentArrivals={newArrivals} />}
+      </div>
       {overview && <LegacySection legacyContent={overview} />}
+
+      <div className="px-5 lg:px-[130px]">
       {deals && <DayOfTheDeal deals={deals} />}
       {promo && <PromoBanner promoBanner={promo} />}
       {collections && <Collections collections={collections} />}
