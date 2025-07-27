@@ -25,7 +25,7 @@ const Collections = ({ collections }: CollectionsProps) => (
               src={getStrapiMedia(col.image)}
               alt={col.title || 'Collection image'}
               fill
-              objectFit="cover"
+             style={{ objectFit: 'cover' }}
               objectPosition="left top"
             // sizes="(max-width: 640px) 90vw, (max-width: 768px) 45vw, 30vw"
             />

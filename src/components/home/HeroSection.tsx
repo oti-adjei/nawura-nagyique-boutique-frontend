@@ -39,7 +39,7 @@ const HeroSection = ({ hero }: HeroProps) => {
           fill
           // sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           // height={600}
-          objectFit="cover" // Adjusted opacity for background effect
+          style={{ objectFit: 'cover' }} // Adjusted opacity for background effect
           // objectPosition="top"
           priority // Load the image with priority
         />
