@@ -54,19 +54,44 @@ async function fetchStrapi(endpoint: string, method: 'GET' | 'POST' | 'PUT' | 'D
 export default fetchStrapi;
 
 // utils/strapi.ts
-export function getStrapiMedia(url?: string): string {
-  if (!url) return 'https://placehold.co/600x400'; // fallback if url is missing
+// export function getStrapiMedia(url?: string): string {
+//   if (!url) return 'https://placehold.co/600x400'; // fallback if url is missing
+//   console.log("the url for Image is " +url)
+//   //
 
-  const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
-  if (!baseUrl) {
-    console.error('Strapi base URL not set in env');
-    return url; // fallback to relative URL
+//   const baseUrl = process.env.NEXT_PUBLIC_STRAPI_URL;
+//   if (!baseUrl) {
+//     console.error('Strapi base URL not set in env');
+//     return url; // fallback to relative URL
+//   }
+
+//   // If the URL is already absolute (starts with http), return as is
+//   if (url.startsWith('http') || url.startsWith('https')) return url;
+
+//   //console.log("the url for Image is " +`${baseUrl}${url}`)
+
+//   return `${baseUrl}${url}`;
+// }
+
+// lib/media.ts (example file)
+
+export function getStrapiMedia(url?: string | null): string {
+  const defaultImage = 'https://placehold.co/600x400?text=Image+Not+Available';
+
+  // 1. If the URL is null, undefined, or an empty string, return the default.
+  if (!url) {
+    return defaultImage;
   }
 
-  // If the URL is already absolute (starts with http), return as is
-  if (url.startsWith('http')) return url;
+  console.log("the url for Image is " +url)
 
-  //console.log("the url for Image is " +`${baseUrl}${url}`)
+  // 2. If the URL is already absolute, return it as is. This is for Cloudinary.
+  if (url.startsWith('http') || url.startsWith('https') || url.startsWith('//')) {
+    return url;
+  }
 
-  return `${baseUrl}${url}`;
+  // 3. If the URL is relative, build the full URL. This is for old, local media.
+  // This part might not even be needed if all your media is on Cloudinary.
+  const strapiUrl = process.env.NEXT_PUBLIC_STRAPI_URL || '';
+  return `${strapiUrl}${url}`;
 }
