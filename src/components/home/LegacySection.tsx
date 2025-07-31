@@ -1,4 +1,5 @@
 // components/LegacySection.tsx
+import { getStrapiMedia } from '@/lib/utils';
 import type { LegacyContent } from '@/types/api'; // Adjust import path
 import Image from 'next/image'; // Using next/image is recommended
 
@@ -14,17 +15,17 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
   // //console.log("image is image" + JSON.stringify(image))
 
   // Safely access image URL from Strapi
-  const imageUrl = image?.url ? process.env.NEXT_PUBLIC_STRAPI_URL + image.url : null;
+  const imageUrl = image?.url ? image.url : null;
 
   return (
-   <section className="w-full my-14 py-20 bg-[#FCEEF5]">
+   <section className="w-full my-14 py-20 bg-[#f8eff3]">
   <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto gap-y-10 md:gap-x-16">
     
     {/* Left: Image */}
     <div className="w-full md:w-1/2 h-[400px] md:h-[500px] relative">
       {imageUrl ? (
         <Image
-          src={imageUrl}
+          src={getStrapiMedia(imageUrl)}
           alt={title || 'Legacy background'}
           fill
           className="object-cover rounded-xl"

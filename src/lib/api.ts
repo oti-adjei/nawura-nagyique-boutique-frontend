@@ -140,7 +140,8 @@ export async function getDeals() {
 export async function getPromotionalBanner(): Promise<PromotionalBanner> {
   //console.log("Fetching Promotional Banner...");
   return {
-    image: '/uploads/Background_2ffd65f716.png',
+    image: 'https://res.cloudinary.com/dpoupp8bj/image/upload/v1753970338/Background_1_70f50d8521.png',
+    // image: '/uploads/Background_2ffd65f716.png',
     title: 'Latest Exclusive Summer Collection',
     cta: 'Explore Summer',
   };
@@ -150,9 +151,12 @@ export async function getPromotionalBanner(): Promise<PromotionalBanner> {
 export async function getCollections(): Promise<Collection[]> {
   //console.log("Fetching Collections...");
   return [
-    { id: 301, title: "Women’s Collection", image: '/uploads/women_fe7af95179.png' },
-    { id: 302, title: "Kid’s Collection", image: '/uploads/13_jpg_17583051ec.png' },
-    { id: 303, title: "Men’s Collection", image: '/uploads/14_jpg_2b11ba2eca.png' },
+    { id: 301, title: "Women’s Collection", image: 'https://res.cloudinary.com/dpoupp8bj/image/upload/v1753628134/women_45e2850f1b.png' },
+    { id: 302, title: "Kid’s Collection", image: 'https://res.cloudinary.com/dpoupp8bj/image/upload/v1753628133/13_jpg_624147f7f2.png' },
+    { id: 303, title: "Men’s Collection", image: 'https://res.cloudinary.com/dpoupp8bj/image/upload/v1753628133/14_jpg_e645ee2ede.png' },
+    // { id: 301, title: "Women’s Collection", image: '/uploads/women_fe7af95179.png' },
+    // { id: 302, title: "Kid’s Collection", image: '/uploads/13_jpg_17583051ec.png' },
+    // { id: 303, title: "Men’s Collection", image: '/uploads/14_jpg_2b11ba2eca.png' },
   ];
 }
 
