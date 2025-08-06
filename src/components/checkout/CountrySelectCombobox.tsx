@@ -17,7 +17,7 @@ export default function SelectCombobox({
   initialSelectedValue = '',
   onOptionSelect,
   placeholder = 'Start typing or select...',
-  label = 'Select Item',
+  label = '',
   id = 'select-combobox',
 }: SelectComboboxProps) {
   const initialOption = options.find(opt => opt.value === initialSelectedValue);

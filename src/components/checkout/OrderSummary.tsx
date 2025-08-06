@@ -2,6 +2,8 @@
 import type { CartItem } from '@/types/checkout';
 import Image from 'next/image';
 import { HiLockClosed } from "react-icons/hi2"; // Using Heroicons for lock
+import { useLocationStore } from '@/store/location/useLocationStore';
+import { useExchangeRates } from '@/hooks/useExchangeRates';
 
 interface OrderSummaryProps {
   items: CartItem[];
@@ -12,8 +14,52 @@ interface OrderSummaryProps {
   discountCode: string;
   onDiscountCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onApplyDiscount: () => void;
-  // Pay Now button is rendered here, but onSubmit is handled by the parent form
-  isSubmitting:boolean
+  isSubmitting: boolean;
+  isCalculatingShipping?: boolean;
+}
+
+// Helper function to format currency
+function formatCurrency(amount: number, currency: string): string {
+  if (currency === 'CAD') {
+    // Use CDN$ for Canadian dollars
+    return `CDN$${amount.toFixed(2)}`;
+  }
+  
+  return new Intl.NumberFormat('en-CA', {
+    style: 'currency',
+    currency: currency,
+  }).format(amount);
+}
+
+// Helper function to convert CAD to target currency
+function convertAndFormat(cadAmount: number, targetCurrency: string, rates: { [key: string]: number }): string {
+  if (targetCurrency === 'CAD') {
+    return formatCurrency(cadAmount, 'CAD');
+  }
+  
+  const rate = rates[targetCurrency];
+  if (!rate) {
+    return formatCurrency(cadAmount, 'CAD'); // Fallback to CAD
+  }
+  
+  const convertedAmount = cadAmount * rate;
+  const formattedAmount = formatCurrency(convertedAmount, targetCurrency);
+  
+  // Add approximate symbol for converted currencies
+  return `≈ ${formattedAmount}`;
+}
+
+interface OrderSummaryProps {
+  items: CartItem[];
+  subtotal: number;
+  shipping: number;
+  discount: number;
+  total: number;
+  discountCode: string;
+  onDiscountCodeChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onApplyDiscount: () => void;
+  isSubmitting: boolean;
+  isCalculatingShipping?: boolean;
 }
 
 const OrderSummary: React.FC<OrderSummaryProps> = ({
@@ -25,10 +71,13 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
   discountCode,
   onDiscountCodeChange,
   onApplyDiscount,
-  isSubmitting
+  isSubmitting,
+  isCalculatingShipping = false
 }) => {
+  const { currency } = useLocationStore();
+  const { rates, loading: ratesLoading } = useExchangeRates();
   return (
-    <div className="bg-white p-6 rounded-lg shadow sticky top-8"> {/* Sticky positioning */}
+    <div className="bg-white p-6 rounded-lg shadow top-8"> {/* Sticky positioning */}
       <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-gray-100">Review your cart</h2>
 
       {/* Cart Items */}
@@ -46,12 +95,14 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
             </div>
             <div className="flex-grow">
               <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{item.name}</p>
-              {item.description && (
-                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-3">{item.description}</p>
-              )}
-               <p className="text-xs text-gray-500 dark:text-gray-400">Qty: {item.quantity}</p>
+              {/* {item.description && (
+                 <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-1">{item.description}</p>
+              )} */}
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {item.quantity} {item.quantity === 1 ? 'piece' : 'pieces'}
+              </p>
             </div>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">${(item.price * item.quantity).toFixed(2)}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{convertAndFormat(item.price * item.quantity, currency, rates)}</p>
           </div>
         ))}
       </div>
@@ -83,21 +134,33 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
       <div className="space-y-2 border-t border-gray-200 dark:border-gray-700 pt-4">
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
           <span>Subtotal</span>
-          <span>${subtotal.toFixed(2)}</span>
+          <span>{convertAndFormat(subtotal, currency, rates)}</span>
         </div>
         <div className="flex justify-between text-sm text-gray-600 dark:text-gray-300">
           <span>Shipping</span>
-          <span>${shipping.toFixed(2)}</span>
+          <span>
+            {isCalculatingShipping ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Calculating...
+              </span>
+            ) : (
+              convertAndFormat(shipping, currency, rates)
+            )}
+          </span>
         </div>
         {discount > 0 && (
            <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
             <span>Discount</span>
-            <span>-${discount.toFixed(2)}</span>
+            <span>-{convertAndFormat(discount, currency, rates)}</span>
           </div>
         )}
         <div className="flex justify-between text-base font-semibold text-gray-900 dark:text-gray-100 border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
           <span>Total</span>
-          <span>${total.toFixed(2)}</span>
+          <span>{convertAndFormat(total, currency, rates)}</span>
         </div>
       </div>
 

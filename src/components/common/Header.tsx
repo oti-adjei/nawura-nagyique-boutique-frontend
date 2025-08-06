@@ -16,6 +16,7 @@ import SearchDialog from "./SearchDialog";
 import { CountryData, useLocationStore } from "@/store/location/useLocationStore";
 import { ChevronDownIcon } from "lucide-react";
 import LocationDialog from "./LocationDialog";
+import UserDropdown from "../auth/UserDropdown";
 
 const Header = () => {
     const { country, currency, setCountryAndCurrency, setCurrency, allCountries } = useLocationStore();
@@ -130,25 +131,18 @@ const Header = () => {
 
                 {/* Icons */}
                 <div className="flex items-center space-x-4">
-                    
-                   <button type="button" onClick={openSearch} aria-label="Open search dialog">
-                            <AiOutlineSearch className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
-                        </button>
-                    <Link href="/shop">
-                        <AiOutlineUser className="text-xl cursor-pointer text-gray-700 hover:text-gray-900 hidden sm:block" />
-                    </Link>
-                    <div className="relative">
-                        <Link href="/cart">
-                            <AiOutlineShoppingCart className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
-                        </Link>
-
-                        {/* FIX: Only render the span if hasMounted is true */}
-                        {hasMounted && itemCount > 0 && (
-                            <span className="absolute top-[-6px] right-[-6px] bg-red-500 text-white text-xs rounded-full px-1">
+                    <button type="button" onClick={openSearch} aria-label="Open search dialog">
+                        <AiOutlineSearch className="text-xl cursor-pointer text-gray-700 hover:text-gray-900" />
+                    </button>
+                    <UserDropdown />
+                    <Link href="/cart" className="relative">
+                        <AiOutlineShoppingCart className="text-xl text-gray-700 hover:text-gray-900" />
+                        {itemCount > 0 && (
+                            <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                 {itemCount}
                             </span>
                         )}
-                    </div>
+                    </Link>
                     <button
                         onClick={toggleMobileMenu}
                         className="md:hidden focus:outline-none"

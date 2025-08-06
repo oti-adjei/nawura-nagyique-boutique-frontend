@@ -10,6 +10,7 @@ import CloseIcon from '@mui/icons-material/Close';
 
 // 1. IMPORT your Zustand store hook
 import { useCartStore } from '@/store/cart/useCart';
+import { useLocationStore } from '@/store/location/useLocationStore';
 
 // Initialize Stripe outside of the component to avoid re-creating on every render
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -25,6 +26,9 @@ export const PaypalPayBill = ({ open, onClose, }: PaypalPayBillProps) => {
 
     // 3. GET the cart items directly from the Zustand store.
     const cartItems = useCartStore((state) => state.items);
+    
+    // GET the currency from the location store
+    const { currency } = useLocationStore();
 
     useEffect(() => {
         // Only fetch the secret if the dialog is open and we don't have one already.
@@ -35,7 +39,10 @@ export const PaypalPayBill = ({ open, onClose, }: PaypalPayBillProps) => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ items: cartItems }), // Send the amount to the backend
+                body: JSON.stringify({ 
+                    items: cartItems,
+                    currency: currency 
+                }), // Send the items and currency to the backend
             })
                 .then((res) => res.json())
                 .then((data) => {
@@ -53,7 +60,7 @@ export const PaypalPayBill = ({ open, onClose, }: PaypalPayBillProps) => {
                     setLoading(false);
                 });
         }
-    }, [open, clientSecret, cartItems, onClose]); // Rerun if the dialog opens
+    }, [open, clientSecret, cartItems, currency, onClose]); // Rerun if the dialog opens or currency changes
 
     const handleCloseDialog = () => {
         // Reset clientSecret when dialog closes so a new one is fetched next time

@@ -1,15 +1,15 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from 'react'; // Added useRef
+import { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import type { CartItem as CheckoutCartItem, CheckoutFormData, PaymentMethod, SelectOption } from '@/types/checkout';
 import { Country as CountryService, State as StateService, City as CityService, ICountry, IState, ICity } from 'country-state-city';
 import OrderSummary from './OrderSummary';
 import { useCartStore } from '@/store/cart/useCart';
+import { useLocationStore } from '@/store/location/useLocationStore';
 import SelectCombobox from './CountrySelectCombobox';
 import { PayBill } from './PayBill';
 import { PaypalPayBill } from './PayBilllPaypal';
-
-// const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
 interface CheckoutClientProps {
   initialShippingCost: number;
@@ -17,7 +17,9 @@ interface CheckoutClientProps {
 const CheckoutClient: React.FC<CheckoutClientProps> = ({
   initialShippingCost
 }) => {
+  const { data: session } = useSession();
   const { items: cartItemsFromStore } = useCartStore();
+  const { currency } = useLocationStore();
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: '',
     lastName: '',
@@ -28,9 +30,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     city: '',
     postalCode: '',
     address: '',
-    // Optional fields can be marked with ?:
-    // company?: string;
-    // apartment?: string;
   });
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<PaymentMethod>('bank');
   const [discountCode, setDiscountCode] = useState('');
@@ -39,13 +38,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   // New state to track shipping calculation status
   const [isCalculatingShipping, setIsCalculatingShipping] = useState(false);
-
-
-  // const [clientSecret, setClientSecret] = useState<string | null>(null);
-  // const [isStripeLoading, setIsStripeLoading] = useState(false);
-  // const [stripeError, setStripeError] = useState<string | null>(null); // For errors initializing Stripe
-  const [formSubmissionMessage, setFormSubmissionMessage] = useState<string | null>(null); // For overall form submission status
-  const [isSubmitting, setIsSubmitting] = useState(false); // For the main Pay Now button
+  const [formSubmissionMessage, setFormSubmissionMessage] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
 
   const [countries, setCountries] = useState<SelectOption[]>([]);
@@ -54,6 +48,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   const [isPayBillOpen, setIsPayBillOpen] = useState(false);
   const [isPaypalPayBillOpen, setIsPaypalPayBillOpen] = useState(false);
+  const [isLoadingProfile, setIsLoadingProfile] = useState(false);
 
 
   // Fetch Countries on component mount
@@ -63,7 +58,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       value: c.isoCode,
       originalData: c, // Keep original data if needed
     }));
-    setCountries(fetchedCountries);;
+    setCountries(fetchedCountries);
   }, []);
 
   // Fetch States when Country changes
@@ -78,10 +73,8 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       // Reset state and city if country changes
       setFormData(prev => ({
         ...prev,
-        // selectedStateValue: '',
-        // selectedStateLabel: '',
-        // selectedCityValue: '',
-        // selectedCityLabel: '',
+        state: '',
+        city: '',
       }));
     } else {
       setStates([]); // Clear states if no country is selected
@@ -90,113 +83,151 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   // Fetch Cities when State changes
   useEffect(() => {
-    // FIX: Use formData.selectedCountryValue and formData.selectedStateValue
     if (formData.state && formData.country) {
       const fetchedCities = CityService.getCitiesOfState(
-        formData.country, // Use country
-        formData.state   // Use selectedStateValue
+        formData.country,
+        formData.state
       ).map((c: ICity) => ({
         label: c.name,
-        // FIX: Create a composite key for 'value' as 'id' does not exist on ICity
         value: `${c.name}-${c.stateCode}-${c.countryCode}`,
-        originalData: c, // Keep original data if needed
+        originalData: c,
       }));
       setCities(fetchedCities);
       // Reset city if state changes
       setFormData(prev => ({
         ...prev,
-        // selectedCityValue: '',
-        // selectedCityLabel: '',
+        city: '',
       }));
     } else {
-      setCities([]); // Clear cities if no state/country is selected
+      setCities([]);
     }
-    // FIX: Update dependency array to match the formData properties used
   }, [formData.state, formData.country]);
 
-
-
-   // NEW: Function to calculate shipping and taxes from Canada
-  const calculateShippingAndTaxes = useCallback(async (country: string, state: string, city: string): Promise<number> => {
-    //console.log(`Calculating shipping for ${city}, ${state}, ${country}`);
-    // This is a simulation. In a real app, you would make an API call here.
-    // e.g., await fetch('/api/shipping-rate', { method: 'POST', body: JSON.stringify({ country, state, city }) });
-    
-    // Simulate network delay
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    let calculatedCost = 0;
-    const baseShipping = 15.00; // Base cost for shipping from Canada
-
-    // Country-based cost adjustments
-    if (country === 'CA') { // Domestic
-      calculatedCost = baseShipping; 
-    } else if (country === 'US') { // To USA
-      calculatedCost = baseShipping + 10.00;
-    } else { // International
-      calculatedCost = baseShipping + 25.00;
-    }
-
-    // Tax calculation simulation
-    let taxRate = 0;
-    if (country === 'CA') {
-      // Provincial Sales Tax (PST/GST/HST) simulation for Canada
-      const provinceTaxes: { [key: string]: number } = {
-        'ON': 0.13, 'BC': 0.12, 'NS': 0.15, 'NB': 0.15, 'NL': 0.15,
-        'PE': 0.15, 'QC': 0.14975, 'MB': 0.12, 'SK': 0.11
-      };
-      taxRate = provinceTaxes[state] || 0.05; // Default to 5% GST if not specified
-    } else {
-      // Simulate flat 5% customs/duties for international shipments
-      taxRate = 0.05;
-    }
-    //use city tax rate and add to state adn country tax
-    if(city === 'Montreal'){
-      taxRate += 0.02;
-    } else if(city === 'Vancouver'){
-      taxRate += 0.03;
-    } else if(city === 'Toronto'){
-      taxRate += 0.07;
-    } else if(city === 'Ottawa'){
-      taxRate += 0.06;
-    } else if(city === 'Calgary'){
-      taxRate += 0.01;
-    } else if(city === 'Edmonton'){
-      taxRate += 0.08;
-    } else if(city === 'Winnipeg'){
-      taxRate += 0.04;
-    } else {
-      // Default to 5% GST for other cities
-      taxRate = 0.05;
-    }
-    
-    
-    const taxAmount = calculatedCost * taxRate;
-    const finalCost = calculatedCost + taxAmount;
-
-    //console.log(`Base: $${baseShipping}, Adjusted: $${calculatedCost}, Tax: $${taxAmount.toFixed(2)}, Final: $${finalCost.toFixed(2)}`);
-    return parseFloat(finalCost.toFixed(2));
-  }, []);
-
-  // NEW: useEffect to trigger shipping calculation
+  // Load user profile data if logged in
   useEffect(() => {
-    // Only calculate if all location fields are selected
-    if (formData.country && formData.state && formData.city) {
+    const loadUserProfile = async () => {
+      if (session?.user) {
+        setIsLoadingProfile(true);
+        try {
+          const response = await fetch("/api/user/profile");
+          if (response.ok) {
+            const data = await response.json();
+            if (data.profile) {
+              const profile = data.profile;
+              const address = profile.address ? JSON.parse(profile.address) : null;
+              
+              // Split name into first and last name
+              const nameParts = (profile.name || "").split(" ");
+              const firstName = nameParts[0] || "";
+              const lastName = nameParts.slice(1).join(" ") || "";
+
+              setFormData(prev => ({
+                ...prev,
+                firstName,
+                lastName,
+                email: profile.email || prev.email,
+                phone: profile.phone || prev.phone,
+                country: address?.country || prev.country,
+                state: address?.province || prev.state,
+                city: address?.city || prev.city,
+                postalCode: address?.postalCode || prev.postalCode,
+                address: address?.street || prev.address,
+              }));
+            }
+          }
+        } catch (error) {
+          console.error('Failed to load user profile:', error);
+        } finally {
+          setIsLoadingProfile(false);
+        }
+      }
+    };
+
+    loadUserProfile();
+  }, [session]);
+
+
+   // Function to calculate shipping using Canada Post API
+  const calculateShipping = useCallback(async (country: string, state: string, city: string): Promise<number> => {
+    try {
+      // Get cart weight (you might want to add weight to your product types)
+      const totalWeight = cartItemsFromStore.reduce((total, item) => {
+        // Assuming each item has a weight property in grams, default to 500g if not specified
+        const itemWeight = (item as any).weight || 500; // You'll need to add weight to your product type
+        return total + (itemWeight * item.quantity);
+      }, 0);
+
+      // Your business postal code (replace with your actual postal code)
+      const originPostalCode = process.env.NEXT_PUBLIC_ORIGIN_POSTAL_CODE || 'K1A0A6'; // Default to Canada Post HQ
+
+      // Extract postal code from city if it's in the composite format
+      const cityParts = city.split('-');
+      const destinationPostalCode = formData.postalCode || 'H0H0H0'; // Use form postal code
+
+      const shippingRequest = {
+        originPostalCode,
+        destinationPostalCode,
+        destinationCountry: country,
+        destinationProvince: state,
+        weight: Math.max(totalWeight, 100), // Minimum 100g
+        serviceCode: 'DOM.RP' // Regular Parcel for domestic, will be handled by API
+      };
+
+      const response = await fetch('/api/shipping/canada-post', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(shippingRequest)
+      });
+
+      if (!response.ok) {
+        throw new Error(`Shipping API error: ${response.status}`);
+      }
+
+      const data = await response.json();
+      
+      if (data.success && data.recommendedService) {
+        return data.recommendedService.price;
+      } else {
+        throw new Error('No shipping rates returned');
+      }
+    } catch (error) {
+      console.error('Failed to calculate shipping with Canada Post:', error);
+      
+      // Fallback to simple calculation if API fails
+      let calculatedCost = 15.00;
+      
+      if (country === 'CA') {
+        calculatedCost = 12.00;
+      } else if (country === 'US') {
+        calculatedCost = 25.00;
+      } else {
+        calculatedCost = 35.00;
+      }
+
+      return calculatedCost;
+    }
+  }, [cartItemsFromStore, formData.postalCode]);
+
+  // useEffect to trigger shipping calculation
+  useEffect(() => {
+    // Only calculate if all location fields are selected AND postal code is provided
+    if (formData.country && formData.state && formData.city && formData.postalCode) {
       setIsCalculatingShipping(true);
-      calculateShippingAndTaxes(formData.country, formData.state, formData.city)
+      calculateShipping(formData.country, formData.state, formData.city)
         .then(newCost => {
           setShippingCost(newCost);
         })
         .catch(error => {
           console.error("Failed to calculate shipping:", error);
-          // Optionally, set a default or show an error
           setShippingCost(initialShippingCost);
         })
         .finally(() => {
           setIsCalculatingShipping(false);
         });
     }
-  }, [formData.city, formData.state, formData.country, calculateShippingAndTaxes, initialShippingCost]);
+  }, [formData.city, formData.state, formData.country, formData.postalCode, calculateShipping, initialShippingCost]);
 
 
   const handleCountrySelect = (option: SelectOption | null) => {
@@ -204,9 +235,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       ...prevData,
       country: option ? option.value : '',
       state: '',
-      // selectedStateLabel: '',
       city: '',
-      // selectedCityLabel: '',
     }));
   };
 
@@ -216,7 +245,6 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       ...prevData,
       state: option ? option.value : '',
       city: '',
-      // selectedCityLabel: '',
     }));
   };
 
@@ -235,92 +263,104 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
   const handlePaymentChange = useCallback((method: PaymentMethod) => {
     setSelectedPaymentMethod(method);
-    setFormSubmissionMessage(null); // Clear previous submission messages
+    setFormSubmissionMessage(null);
   }, []);
 
   const handleApplyDiscount = useCallback(() => {
     // Basic discount logic simulation
-    //console.log("Applying discount code:", discountCode);
     if (discountCode.toUpperCase() === 'DISCOUNT10') {
       setAppliedDiscount(10.00); // Apply a $10 discount
-      alert("Discount applied!");
+      setFormSubmissionMessage("Discount applied successfully!");
     } else {
       setAppliedDiscount(0);
-      alert("Invalid discount code.");
+      setFormSubmissionMessage("Invalid discount code. Please try again.");
     }
   }, [discountCode]);
 
-  // UPDATED handleSubmit
+  // handleSubmit function
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (isSubmitting || isCalculatingShipping) return; // Also block submission while calculating shipping
+    if (isSubmitting || isCalculatingShipping) return;
 
     setIsSubmitting(true);
     setFormSubmissionMessage(null);
 
-    //console log form data
-    //console.log("Form Data:", formData);
-
    if (selectedPaymentMethod === 'stripe') {
-      // Instead of trying to render here...
-      // ...you just update the state.
       setIsPayBillOpen(true);
-      return; // Stop the rest of the function from running for now
+      return;
     } 
     else if (selectedPaymentMethod === 'paypal') {
-
       setIsPaypalPayBillOpen(true);
-      return; // Stop the rest of the function from running for now
+      return;
     }
   };
 
   const subtotal = useMemo(() => cartItemsFromStore.reduce((sum, item) => sum + item.price * item.quantity, 0), [cartItemsFromStore]);
   const total = useMemo(() => subtotal + shippingCost - appliedDiscount, [subtotal, shippingCost, appliedDiscount]);
 
-  // const stripeElementsOptions: StripeElementsOptions | undefined = clientSecret ? { clientSecret, appearance: { theme: 'stripe' } } : undefined;
-
-  if (cartItemsFromStore.length === 0) { /* ... empty cart message ... */ }
+  if (cartItemsFromStore.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
+        <p className="text-gray-600 mb-4">Add some items to your cart before proceeding to checkout.</p>
+        <a href="/shop" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+          Continue Shopping
+        </a>
+      </div>
+    );
+  }
 
   const handleClosePayBill = useCallback(() => {
     setIsPayBillOpen(false);
-    setIsSubmitting(false); // Reset isSubmitting when PayBill modal is closed
+    setIsSubmitting(false);
   }, []);
 
   return (
     <>
-    
-      <form onSubmit={handleSubmit}> {/* This form's submit is now primary */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8 xl:gap-12">
-          <div className="lg:col-span-2 space-y-8">
-            {/* Personal Information ... */}
-            <div className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4  dark:text-gray-100">Personal Information</h2>
+      <form onSubmit={handleSubmit}>
+        <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-8">
+          <div className="lg:col-span-2 space-y-6">
+            {/* Personal Information */}
+            <div className="bg-white p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-xl font-semibold">Personal Information</h2>
+                {isLoadingProfile && (
+                  <div className="flex items-center text-sm text-gray-500">
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-pink-500 mr-2"></div>
+                    Loading profile...
+                  </div>
+                )}
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">First Name</label>
-                  <input type="text" id="firstName" name="firstName" value={formData.firstName} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
+                  <label htmlFor="firstName" className="block text-sm text-gray-700 mb-1">First Name</label>
+                  <input type="text" id="firstName" name="firstName" placeholder="Enter name" value={formData.firstName} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Last Name</label>
-                  <input type="text" id="lastName" name="lastName" value={formData.lastName} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
+                  <label htmlFor="lastName" className="block text-sm text-gray-700 mb-1">Last Name</label>
+                  <input type="text" id="lastName" name="lastName" placeholder="Enter name" value={formData.lastName} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
-                  <input type="email" id="email" name="email" value={formData.email} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
+                  <label htmlFor="email" className="block text-sm text-gray-700 mb-1">Email</label>
+                  <input type="email" id="email" name="email" placeholder="Enter email" value={formData.email} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
                 <div>
-                  <label htmlFor="phone" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone number</label>
-                  <input type="tel" id="phone" name="phone" value={formData.phone} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
+                  <label htmlFor="phone" className="block text-sm text-gray-700 mb-1">Phone number</label>
+                  <input type="tel" id="phone" name="phone" placeholder="Enter number" value={formData.phone} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
              
-                <div className="md:col-span-2">
+                <div>
+                  <label htmlFor="country" className="block text-sm text-gray-700 mb-1">Country</label>
                   <SelectCombobox
                     options={countries} 
                     onOptionSelect={handleCountrySelect}
                     initialSelectedValue={formData.country}
-                    label="Country"
-                    placeholder="Search for a country..."
+                    placeholder="Select"
                   />
+                </div>
+                <div>
+                  <label htmlFor="postalCode" className="block text-sm text-gray-700 mb-1">Postal Code</label>
+                  <input type="text" id="postalCode" name="postalCode" placeholder="Enter postal code" value={formData.postalCode} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
 
                 {formData.country && ( // Only show states if a country is selected
@@ -348,9 +388,10 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
                     />
                   </div>
                 )}
+                
                 <div className="md:col-span-2">
-                  <label htmlFor="address" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
-                  <input type="text" id="address" name="address" value={formData.address} onChange={handleInputChange} required className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-pink-500 focus:border-pink-500 dark:bg-gray-700 dark:text-gray-200" />
+                  <label htmlFor="address" className="block text-sm text-gray-700 mb-1">Address</label>
+                  <input type="text" id="address" name="address" placeholder="Enter address" value={formData.address} onChange={handleInputChange} required className="w-full px-4 py-3 border border-gray-200 rounded-md focus:border-gray-400 focus:ring-0" />
                 </div>
               </div>
             </div>
@@ -358,31 +399,35 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 
             {/* Payment Options ... */}
 
-            <div className="bg-white  p-6 rounded-lg shadow">
-              <h2 className="text-lg font-semibold mb-4">Payment Options</h2>
-              <p className="text-sm text-gray-500 dark:text-gray-400 mb-4">Choose your payment option</p>
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="bg-white p-6">
+              <h2 className="text-xl font-semibold mb-2">Payment Options</h2>
+              <p className="text-sm text-gray-500 mb-4">Choose your payment option</p>
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
                 {/* ... payment method selectors ... */}
                 {(['bank', 'paypal', 'stripe', 'cash'] as PaymentMethod[]).map((method) => (
                   <button
                     key={method}
                     type="button"
                     onClick={() => handlePaymentChange(method)}
-                    className={`w-full flex justify-between items-center p-4 border rounded-md cursor-pointer transition-colors duration-150 ${selectedPaymentMethod === method
-                      ? 'border-green-500 ring-1 ring-green-500 bg-green-50 dark:bg-green-900/30 dark:border-green-600'
-                      : 'border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'
-                      }`}
+                    className={`w-full flex justify-between items-center p-4 border rounded-md cursor-pointer transition-colors duration-150 ${
+                      selectedPaymentMethod === method
+                      ? 'border-green-600 ring-1 ring-green-600 bg-white'
+                      : 'border-gray-300 bg-white hover:border-gray-400'
+                    }`}
                   >
-                    <span className="text-sm font-medium  dark:text-gray-200 capitalize">{method === 'bank' ? 'Bank Card' : method}</span>
+                    <span className="text-sm font-medium capitalize">{method === 'bank' ? 'Bank Card' : method}</span>
                     {/* Custom Radio Lookalike */}
-                    <div className={`w-4 h-4 border rounded-full flex items-center justify-center ${selectedPaymentMethod === method ? 'border-green-500 bg-green-500' : 'border-gray-400 dark:border-gray-500'
-                      }`}>
-                      {selectedPaymentMethod === method && <div className="w-1.5 h-1.5 bg-white rounded-full"></div>}
+                    <div className={`w-5 h-5 border rounded-full flex items-center justify-center ${
+                      selectedPaymentMethod === method ? 'border-green-600' : 'border-gray-400'
+                    }`}>
+                      {selectedPaymentMethod === method && <div className="w-3 h-3 bg-green-600 rounded-full"></div>}
                     </div>
                   </button>
                 ))}
   
               </div>
+              </div>
+               <div className="bg-white p-6">
               {/* Cancellation Policy */}
               <div className="bg-white  p-6 rounded-lg shadow">
                 <h2 className="text-lg font-semibold mb-4  dark:text-gray-100">Cancellation Policy</h2>
@@ -406,26 +451,26 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
               discountCode={discountCode}
               onDiscountCodeChange={(e) => setDiscountCode(e.target.value)}
               onApplyDiscount={handleApplyDiscount}
-              isSubmitting={isSubmitting} // Pass isSubmitting to disable button
+              isSubmitting={isSubmitting}
+              isCalculatingShipping={isCalculatingShipping}
             />
             {formSubmissionMessage && (
-              <div className={`mt-4 p-3 rounded-md text-sm ${formSubmissionMessage.includes('success') || formSubmissionMessage.includes('succeeded') || formSubmissionMessage.includes('processing') ? 'bg-green-100 text-green-700' : 'bg-priamry text-primary'}`}>
+              <div className={`mt-4 p-3 rounded-md text-sm ${formSubmissionMessage.includes('success') || formSubmissionMessage.includes('succeeded') || formSubmissionMessage.includes('processing') ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
                 {formSubmissionMessage}
               </div>
             )}
           </div>
-
-         <PayBill
-        open={isPayBillOpen}
-        onClose={handleClosePayBill} 
-        // onClose={() => setIsPayBillOpen(false)}
-      />
-     <PaypalPayBill
-        open={isPaypalPayBillOpen}
-        onClose={handleClosePayBill} 
-        // onClose={() => setIsPayBillOpen(false)}
-      />
         </div>
+
+        {/* Payment Modals */}
+        <PayBill
+          open={isPayBillOpen}
+          onClose={handleClosePayBill} 
+        />
+        <PaypalPayBill
+          open={isPaypalPayBillOpen}
+          onClose={handleClosePayBill} 
+        />
       </form>
     </>
   );

@@ -99,6 +99,7 @@ export interface Product {
   title: string;
   description: string;
   price: number;
+  weight?: number; // Weight in grams for shipping calculation
   availableColors?: Color[];
   tags?: string[]; // Optional: if you want to display categories
   category?: string;
@@ -120,6 +121,7 @@ export interface DisplayProduct {
   name: string;
   price: number;
   originalPrice?: number;
+  weight?: number; // Weight in grams for shipping calculation
   imageUrl: string; // Main image (can be first one or preferred size)
   allImages: string[]; // NEW: All image URLs (e.g., medium or original)
   category?: string;

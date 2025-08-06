@@ -84,11 +84,11 @@ export async function getCategories(): Promise<Category[]> {
 
   // --- DELETE THIS DUMMY DATA RETURN WHEN USING STRAPI ---
   return [
-    { id: 1, name: "Clothing", slug: "clothing", icon: "/icons/clothing.svg" },
-    { id: 2, name: "Accessories", slug: "accessories", icon: "/icons/accessories.svg" },
-    { id: 3, name: "Shoes", slug: "shoes", icon: "/icons/shoes.svg" },
-    { id: 4, name: "Bags", slug: "bags", icon: "/icons/bags.svg" },
-    { id: 5, name: "Jewelry", slug: "jewelry", icon: "/icons/jewelry.svg" },
+    { id: 1, name: "Clothing", slug: "clothing", icon: "Shirt" },
+    { id: 2, name: "Accessories", slug: "accessories", icon: "Sparkles" },
+    { id: 3, name: "Shoes", slug: "shoes", icon: "Shoe" },
+    { id: 4, name: "Bags", slug: "bags", icon: "ShoppingBag" },
+    { id: 5, name: "Jewelry", slug: "jewelry", icon: "Gem" },
   ];
 }
 

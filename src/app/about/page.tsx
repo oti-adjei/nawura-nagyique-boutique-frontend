@@ -97,7 +97,6 @@ export default async function AboutPage() {
               <p className="text-gray-500">Images are loading...</p>
             </div>
           )}
-ƒ&
           {/* --- Text Content Column --- */}
           <div className="space-y-5">
             <h1 className="text-4xl sm:text-5xl font-bold text-gray-800">

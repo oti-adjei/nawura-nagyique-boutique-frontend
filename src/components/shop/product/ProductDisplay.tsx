@@ -117,82 +117,73 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
           {/* Product Info */}
           <div className="lg:w-1/2 mt-4 lg:mt-0">
-            <h3 className="text-2xl font-semibold tracking-tight text-gray-900 sm:text-3xl">
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
               {product.name}
-            </h3>
+            </h1>
 
             {/* Rating and Reviews */}
-            {/* Assuming 'product' is available in your component's scope
-                    and 'renderStars' is a function you have defined */}
-
-            {/* Conditionally render the rating block */}
             {product.rating && product.rating > 0 && (
-              <div className="mt-3 flex items-center gap-2">
+              <div className="mt-3 flex items-center gap-1">
                 {/* Render stars (only called if rating is valid) */}
                 {renderStars(product.rating)}
 
                 {/* Render rating text */}
-                <p className="text-sm text-gray-600">
-                  {/* It's safe to use .toFixed now because product.rating is truthy */}
+                <span className="ml-2 text-gray-600">
                   {product.rating.toFixed(1)}
-
-                  {/* Also conditionally display review count if it exists and is positive */}
                   {product.reviewCount && product.reviewCount > 0 && (
-                    ` (${product.reviewCount} reviews)` // Note the space added before parenthesis
+                    <span className="text-gray-500"> ({product.reviewCount} reviews)</span>
                   )}
-                  {/* Alternatively, if you want to show (0 reviews): */}
-                  {/* ` (${product.reviewCount ?? 0} reviews)` */}
-                </p>
+                </span>
               </div>
             )}
 
             {/* Price */}
-            <div className="mt-4 flex items-baseline space-x-2">
+            <div className="mt-6 flex items-center space-x-4">
               {typeof product.price === 'number' && (
-                <p className="text-2xl font-bold text-gray-900">${product.price.toFixed(2)}</p>
+                <span className="text-3xl font-bold">$ {product.price.toFixed(2)}</span>
               )}
               {product.originalPrice && typeof product.originalPrice === 'number' && (
-                <p className="text-lg text-gray-400 line-through">${product.originalPrice.toFixed(2)}</p>
+                <span className="text-xl text-gray-400 line-through">$ {product.originalPrice.toFixed(2)}</span>
               )}
             </div>
 
             {/* Wishlist Button */}
-            <button className="mt-4 flex items-center text-sm font-medium text-gray-600 hover:text-red-500">
-              <FaRegHeart className="mr-1.5 h-4 w-4 flex-shrink-0" aria-hidden="true" />
-              Add to Wish List
-            </button>
+            <div className="mt-6">
+              <button className="flex items-center text-base font-medium text-gray-700 hover:text-red-500 transition-colors">
+                <FaRegHeart className="mr-2 h-5 w-5 flex-shrink-0" aria-hidden="true" />
+                Add to Wish List
+              </button>
+            </div>
 
 
             {/* Separator */}
-            <div className="mt-6 border-t border-gray-200 pt-6">
+            <div className="mt-8 border-t border-gray-200 pt-8">
 
               {/* Color Selector */}
               <div>
-                <h3 className="text-sm font-medium text-gray-900">Color: <span className="font-normal text-gray-600">{product.colors?.[0]}</span></h3>
-                <div className="relative mt-2 border border-gray-300 rounded-md px-3 py-2 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm flex justify-between items-center text-gray-600 bg-white">
-                  <span>{product.colors?.[0]}</span>
-                  <IoIosArrowDown className="h-5 w-5 text-gray-400" aria-hidden="true" />
+                <h3 className="text-lg font-medium text-gray-700">Color: <span className="font-bold text-gray-900">{product.colors?.[0]}</span></h3>
+                <div className="relative mt-2 border border-gray-300 rounded-md px-4 py-3 text-left cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 flex justify-between items-center text-gray-800 bg-white">
+                  <span className="font-medium">{product.colors?.[0]}</span>
+                  <IoIosArrowDown className="h-5 w-5 text-gray-500" aria-hidden="true" />
                 </div>
               </div>
 
               {/* Size Selector */}
-              <div className="mt-6">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-sm font-medium text-gray-900">Size: <span className="font-normal text-gray-600">{selectedSize}</span></h3>
-                </div>
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-700">Size: <span className="font-bold text-gray-900">{selectedSize}</span></h3>
 
                 {/* Adjusted grid columns for responsiveness */}
-                <div className="mt-2 grid grid-cols-4 gap-2 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-6 xl:grid-cols-7">
+                <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-8">
                   {product.sizes?.map((size) => (
                     <button
                       key={size}
                       onClick={() => setSelectedSize(size)}
                       className={`
-                        border rounded-md py-2 px-1 text-xs sm:text-sm font-medium flex items-center justify-center transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500
+                        border rounded-md py-2.5 px-1 text-sm font-medium flex items-center justify-center transition-colors duration-150 focus:outline-none
                         ${selectedSize === size
                           // Updated Selected Style
-                          ? 'bg-gray-800 border-gray-800 text-white hover:bg-gray-700'
-                          : 'border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                          ? 'bg-gray-900 border-gray-900 text-white'
+                          : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200'
                         }
                     `}
                     >
@@ -203,59 +194,68 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
               </div>
 
               {/* Quantity & Add to Cart Row */}
-              <div className="mt-8 flex flex-col sm:flex-row gap-4">
-                {/* Quantity Selector */}
-                <div className="flex-shrink-0">
-                  {/* <label htmlFor="quantity" className="sr-only">Quantity</label> */}
-                  <div className="flex items-center border border-gray-300 rounded-md">
-                    <button
-                      onClick={handleDecreaseQuantity}
-                      className="px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-l-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                      aria-label="Decrease quantity"
-                    >
-                      -
-                    </button>
-                    <span className="px-4 py-2 text-sm font-medium text-gray-700 border-l border-r border-gray-300 min-w-[40px] text-center">
-                      {quantity}
-                    </span>
-                    <button
-                      onClick={handleIncreaseQuantity}
-                      className="px-3 py-2 text-gray-500 hover:bg-gray-100 rounded-r-md focus:outline-none focus:ring-1 focus:ring-gray-500"
-                      aria-label="Increase quantity"
-                    >
-                      +
-                    </button>
+              <div className="mt-8">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  {/* Quantity Selector */}
+                  <div className="flex-shrink-0">
+                    <div className="flex items-center border border-gray-300 rounded-md bg-gray-100">
+                      <button
+                        onClick={handleDecreaseQuantity}
+                        className="px-5 py-3 text-gray-700 hover:bg-gray-200 rounded-l-md focus:outline-none transition-colors text-lg font-medium"
+                        aria-label="Decrease quantity"
+                      >
+                        −
+                      </button>
+                      <span className="px-6 py-3 text-base font-medium text-gray-900 border-l border-r border-gray-300 min-w-[60px] text-center bg-white">
+                        {quantity}
+                      </span>
+                      <button
+                        onClick={handleIncreaseQuantity}
+                        className="px-5 py-3 text-gray-700 hover:bg-gray-200 rounded-r-md focus:outline-none transition-colors text-lg font-medium"
+                        aria-label="Increase quantity"
+                      >
+                        +
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Add to Cart Button */}
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="cursor-pointer flex w-full sm:flex-1 items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-3.5 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                  >
+                    <FaShoppingCart className="mr-2 h-5 w-5" aria-hidden="true" />
+                    Add to Cart
+                  </button>
                 </div>
-
-                {/* Add to Cart Button */}
-                <button
-                  type="button"
-                  onClick={handleAddToCart}
-                  className="cursor-pointer flex w-full sm:w-auto flex-1 items-center justify-center rounded-md border border-transparent bg-red-600 px-8 py-2.5 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
-                >
-
-                  <FaShoppingCart className="mr-2 h-5 w-5" aria-hidden="true" />
-                  Add to Cart
-                </button>
               </div>
 
 
               {/* Shipping Info */}
-              <div className="mt-8 text-sm text-gray-500 bg-gray-50 p-4 rounded-md border border-gray-200">
-                <p>Enjoy <span className="font-medium text-gray-700">FREE express & Free Returns</span> on orders over £35!</p>
-                <p className="mt-1">Kindly place your order by 6pm on December 22nd for expedited processing.</p>
+              <div className="mt-8">
+                <p className="text-base">
+                  Enjoy <span className="font-bold text-gray-900">FREE express</span> & <span className="font-bold text-gray-900">Free Returns</span> on orders over £35!
+                </p>
+                <p className="mt-2 text-gray-600">
+                  Kindly place your order by 6pm on December 22nd for expedited processing
+                </p>
               </div>
 
               {/* Payment Methods */}
-              <div className="mt-6">
-                <h4 className="text-sm font-medium text-gray-900">Payment method</h4>
-                <div className="mt-2 relative flex items-center space-x-3 sm:space-x-4">
-                  {/* Using simple img tags for payment icons as svgs/react-icons might not match exactly */}
-                  <FaCcVisa className="text-xl border border-gray-300 rounded m-0.5" />
-                  <FaCcMastercard className="text-xl border border-gray-300 rounded m-0.5" />
-                  <FaCcAmex className="text-xl border border-gray-300 rounded m-0.5" />
-                  <a href="#" className="ml-auto text-sm font-medium text-red-600 hover:text-red-500 underline">
+              <div className="mt-8">
+                <h4 className="text-lg font-medium text-gray-900 mb-3">Payment method</h4>
+                <div className="flex items-center gap-4">
+                  <div className="border border-gray-300 rounded p-2">
+                    <FaCcVisa className="text-2xl" />
+                  </div>
+                  <div className="border border-gray-300 rounded p-2">
+                    <FaCcMastercard className="text-2xl" />
+                  </div>
+                  <div className="border border-gray-300 rounded p-2">
+                    <FaCcAmex className="text-2xl" />
+                  </div>
+                  <a href="#" className="ml-auto text-base font-medium text-gray-700 hover:text-gray-900 underline">
                     Learn more
                   </a>
                 </div>
