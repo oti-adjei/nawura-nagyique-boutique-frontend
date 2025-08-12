@@ -1,6 +1,10 @@
 import Image from "next/image";
-import * as LucideIcons from "lucide-react";
+import { icons } from "lucide-react"; 
+// import * as LucideIcons from "lucide-react";
 import Link from "next/link";
+
+// 1. Create a type representing all possible icon names from the library.
+export type IconName = keyof typeof icons;
 
 interface Category {
   id: number;
@@ -20,7 +24,8 @@ const Categories = async ({ categories }: CategoriesProps) => {
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 text-center">
         {categories.map((category) => {
           const isImage = category.icon.startsWith("/") || category.icon.startsWith(".");
-          const LucideIcon = !isImage ? (LucideIcons as any)[category.icon] : null;
+          const LucideIcon = !isImage ? icons[category.icon as IconName]
+ : null;
 
           return (
             <Link 

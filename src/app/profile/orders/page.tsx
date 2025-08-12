@@ -5,7 +5,8 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
-import { formatCurrency } from "@/lib/currency";
+import { formatCurrency } from "@/components/checkout/OrderSummary";
+// import { formatCurrency } from "../../components/checkout/OrderSummary";
 
 interface Order {
   id: number;
@@ -121,7 +122,7 @@ export default function OrdersPage() {
             {orders.length === 0 ? (
               <div className="text-center py-12">
                 <div className="text-gray-500 text-lg mb-4">No orders found</div>
-                <p className="text-gray-400 mb-6">You haven't placed any orders yet.</p>
+                <p className="text-gray-400 mb-6">You haven&apos;t placed any orders yet.</p>
                 <Link
                   href="/shop"
                   className="inline-flex items-center px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-pink-600 hover:bg-pink-700"

@@ -53,7 +53,7 @@ export default function LocationDialog({ isOpen, onClose, onSelect }: LocationDi
       <ul className="divide-y divide-gray-100 p-2">
         {filteredCountries.length === 0 ? (
           <li className="p-4 text-center text-gray-500">
-            No countries found matching "{searchTerm}"
+            No countries found matching &ldquo;{searchTerm}&rdquo;
           </li>
         ) : (
           filteredCountries.map((countryItem) => (
@@ -94,7 +94,7 @@ export default function LocationDialog({ isOpen, onClose, onSelect }: LocationDi
           {isAutoDetected && (
             <div className="mt-3 p-2 bg-green-50 border border-green-200 rounded-md">
               <p className="text-sm text-green-700">
-                📍 We detected you're in <strong>{country.name}</strong>. You can change this if needed.
+                📍 We detected you&apos;re in <strong>{country.name}</strong>. You can change this if needed.
               </p>
             </div>
           )}

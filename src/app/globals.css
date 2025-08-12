@@ -44,9 +44,21 @@ body {
   height: 100%;
   background-color: var(--color-background);
   color: var(--color-main-text);
-  font-family: var(--font-sans);
+  font-family: var(--font-geist-sans);
+
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* 
+  OPTIONAL BUT RECOMMENDED:
+  Apply your monospaced font to elements that are semantically for code or preformatted text.
+*/
+pre,
+code,
+kbd,
+samp {
+  font-family: var(--font-geist-mono), monospace;
 }
 
 /* --- Heading Styles --- */

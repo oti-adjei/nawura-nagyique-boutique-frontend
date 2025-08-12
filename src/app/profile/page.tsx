@@ -9,18 +9,18 @@ import SelectCombobox from '@/components/checkout/CountrySelectCombobox';
 import type { SelectOption } from '@/types/checkout';
 
 
-interface UserProfile {
-  name: string;
-  email: string;
-  phone?: string;
-  address?: {
-    street: string;
-    city: string;
-    province: string;
-    postalCode: string;
-    country: string;
-  };
-}
+// interface UserProfile {
+//   name: string;
+//   email: string;
+//   phone?: string;
+//   address?: {
+//     street: string;
+//     city: string;
+//     province: string;
+//     postalCode: string;
+//     country: string;
+//   };
+// }
 
 export default function ProfilePage() {
   const { data: session, status } = useSession();
@@ -136,8 +136,8 @@ export default function ProfilePage() {
             // If no profile exists, use session data as fallback
             setProfile(prev => ({
               ...prev,
-              name: session.user.name || "",
-              email: session.user.email || "",
+              name: session?.user?.name || "",
+              email: session?.user?.email || "",
             }));
           }
         } catch (error) {
@@ -145,8 +145,8 @@ export default function ProfilePage() {
           // Use session data as fallback
           setProfile(prev => ({
             ...prev,
-            name: session.user.name || "",
-            email: session.user.email || "",
+            name: session?.user?.name || "",
+            email: session?.user?.email || "",
           }));
         }
       };

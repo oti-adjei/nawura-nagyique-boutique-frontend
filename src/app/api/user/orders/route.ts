@@ -1,10 +1,33 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth/next';
 import { authOptions } from '@/lib/auth';
+import type { Session } from 'next-auth'; 
 
-export async function GET(request: NextRequest) {
+export const dynamic = 'force-dynamic';
+
+export async function GET(_: NextRequest) {
   try {
-    const session = await getServerSession(authOptions);
+    const session: Session | null  = await getServerSession(authOptions);
+
+    // Define a minimal type for Strapi order data
+    type StrapiOrder = {
+      id: number;
+      documentId?: string;
+      orderNumber?: string;
+      status?: string;
+      total?: number;
+      currency?: string;
+      createdAt?: string;
+      shippingName?: string;
+      customerName?: string;
+      shippingAddress?: string;
+      shippingCity?: string;
+      shippingProvince?: string;
+      shippingPostalCode?: string;
+      shippingCountry?: string;
+      orderItems?: unknown[];
+      items?: unknown[];
+    };
 
     if (!session?.user?.email) {
       return NextResponse.json(
@@ -45,7 +68,7 @@ export async function GET(request: NextRequest) {
     const strapiData = await strapiResponse.json();
     
     // Transform Strapi data to match our frontend interface
-    const orders = strapiData.data.map((order: any) => ({
+    const orders = strapiData.data.map((order: StrapiOrder) => ({
       id: order.id,
       documentId: order.documentId,
       orderNumber: order.orderNumber || `ORD-${order.id}`,

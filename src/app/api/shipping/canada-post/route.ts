@@ -110,7 +110,7 @@ function buildCanadaPostXML(params: ShippingRequest & { length: number; width: n
     originPostalCode,
     destinationPostalCode,
     destinationCountry,
-    destinationProvince,
+    // destinationProvince,
     weight,
     length,
     width,

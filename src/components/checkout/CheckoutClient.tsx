@@ -6,10 +6,11 @@ import type { CartItem as CheckoutCartItem, CheckoutFormData, PaymentMethod, Sel
 import { Country as CountryService, State as StateService, City as CityService, ICountry, IState, ICity } from 'country-state-city';
 import OrderSummary from './OrderSummary';
 import { useCartStore } from '@/store/cart/useCart';
-import { useLocationStore } from '@/store/location/useLocationStore';
+// import { useLocationStore } from '@/store/location/useLocationStore';
 import SelectCombobox from './CountrySelectCombobox';
 import { PayBill } from './PayBill';
 import { PaypalPayBill } from './PayBilllPaypal';
+import Link from 'next/link';
 
 interface CheckoutClientProps {
   initialShippingCost: number;
@@ -19,7 +20,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
 }) => {
   const { data: session } = useSession();
   const { items: cartItemsFromStore } = useCartStore();
-  const { currency } = useLocationStore();
+  // const { currency } = useLocationStore();
   const [formData, setFormData] = useState<CheckoutFormData>({
     firstName: '',
     lastName: '',
@@ -150,10 +151,11 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
    // Function to calculate shipping using Canada Post API
   const calculateShipping = useCallback(async (country: string, state: string, city: string): Promise<number> => {
     try {
+      console.log('Calculating shipping...'+ `Country: ${country}, State: ${state}, City: ${city}`);
       // Get cart weight (you might want to add weight to your product types)
       const totalWeight = cartItemsFromStore.reduce((total, item) => {
         // Assuming each item has a weight property in grams, default to 500g if not specified
-        const itemWeight = (item as any).weight || 500; // You'll need to add weight to your product type
+       const itemWeight = item.weight || 500;  // You'll need to add weight to your product type
         return total + (itemWeight * item.quantity);
       }, 0);
 
@@ -161,7 +163,7 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       const originPostalCode = process.env.NEXT_PUBLIC_ORIGIN_POSTAL_CODE || 'K1A0A6'; // Default to Canada Post HQ
 
       // Extract postal code from city if it's in the composite format
-      const cityParts = city.split('-');
+      // const cityParts = city.split('-');
       const destinationPostalCode = formData.postalCode || 'H0H0H0'; // Use form postal code
 
       const shippingRequest = {
@@ -229,7 +231,11 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
     }
   }, [formData.city, formData.state, formData.country, formData.postalCode, calculateShipping, initialShippingCost]);
 
-
+  const handleClosePayBill = useCallback(() => {
+    setIsPayBillOpen(false);
+    setIsSubmitting(false);
+  }, []);
+  
   const handleCountrySelect = (option: SelectOption | null) => {
     setFormData(prevData => ({
       ...prevData,
@@ -303,17 +309,14 @@ const CheckoutClient: React.FC<CheckoutClientProps> = ({
       <div className="text-center py-12">
         <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
         <p className="text-gray-600 mb-4">Add some items to your cart before proceeding to checkout.</p>
-        <a href="/shop" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+        <Link href="/shop" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
           Continue Shopping
-        </a>
+        </Link>
       </div>
     );
   }
 
-  const handleClosePayBill = useCallback(() => {
-    setIsPayBillOpen(false);
-    setIsSubmitting(false);
-  }, []);
+
 
   return (
     <>

@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, {useEffect, useState } from "react";
 import {
     AiOutlineSearch,
-    AiOutlineUser,
+    // AiOutlineUser,
     AiOutlineShoppingCart,
 } from "react-icons/ai";
 import { FiMenu } from "react-icons/fi";
@@ -137,7 +137,7 @@ const Header = () => {
                     <UserDropdown />
                     <Link href="/cart" className="relative">
                         <AiOutlineShoppingCart className="text-xl text-gray-700 hover:text-gray-900" />
-                        {itemCount > 0 && (
+                        {hasMounted && itemCount > 0 && (
                             <span className="absolute -top-2 -right-2 bg-pink-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
                                 {itemCount}
                             </span>

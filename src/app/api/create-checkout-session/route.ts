@@ -6,7 +6,7 @@ import { getStrapiMedia } from '@/lib/utils';
 
 // Initialize Stripe with your secret key
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-05-28.basil',
+  apiVersion: '2025-07-30.basil',
   typescript: true,
 });
 

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { AiOutlineUser } from "react-icons/ai";
 import Link from "next/link";
+import Image from "next/image";
 
 export default function UserDropdown() {
   const { data: session, status } = useSession();
@@ -40,8 +41,10 @@ export default function UserDropdown() {
         className="flex items-center space-x-1 p-1 rounded-md hover:bg-gray-100"
       >
         {session?.user?.image ? (
-          <img
+          <Image
             src={session.user.image}
+            width={24}
+            height={24}
             alt="Profile"
             className="w-6 h-6 rounded-full"
           />

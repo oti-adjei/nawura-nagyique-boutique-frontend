@@ -5,6 +5,14 @@ import { HiLockClosed } from "react-icons/hi2"; // Using Heroicons for lock
 import { useLocationStore } from '@/store/location/useLocationStore';
 import { useExchangeRates } from '@/hooks/useExchangeRates';
 
+
+
+// A simple, reusable skeleton loader component
+const SkeletonLoader = ({ className }: { className?: string }) => {
+  return <div className={`bg-gray-200 rounded animate-pulse ${className}`} />;
+};
+
+
 interface OrderSummaryProps {
   items: CartItem[];
   subtotal: number;
@@ -19,7 +27,7 @@ interface OrderSummaryProps {
 }
 
 // Helper function to format currency
-function formatCurrency(amount: number, currency: string): string {
+export function formatCurrency(amount: number, currency: string): string {
   if (currency === 'CAD') {
     // Use CDN$ for Canadian dollars
     return `CDN$${amount.toFixed(2)}`;
@@ -102,7 +110,7 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 {item.quantity} {item.quantity === 1 ? 'piece' : 'pieces'}
               </p>
             </div>
-            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{convertAndFormat(item.price * item.quantity, currency, rates)}</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-gray-100">{ratesLoading ? <SkeletonLoader className="h-5 w-20" /> : convertAndFormat(item.price * item.quantity, currency, rates)}</p>
           </div>
         ))}
       </div>
@@ -148,19 +156,20 @@ const OrderSummary: React.FC<OrderSummaryProps> = ({
                 Calculating...
               </span>
             ) : (
-              convertAndFormat(shipping, currency, rates)
+              ratesLoading ? <SkeletonLoader className="h-5 w-20" /> : convertAndFormat(shipping, currency, rates)
             )}
           </span>
         </div>
         {discount > 0 && (
            <div className="flex justify-between text-sm text-green-600 dark:text-green-400">
             <span>Discount</span>
-            <span>-{convertAndFormat(discount, currency, rates)}</span>
+            <span>- {ratesLoading ? <SkeletonLoader className="h-5 w-16" /> : `-${convertAndFormat(discount, currency, rates)}`}</span>
           </div>
         )}
         <div className="flex justify-between text-base font-semibold text-gray-900 dark:text-gray-100 border-t border-gray-200 dark:border-gray-700 pt-2 mt-2">
           <span>Total</span>
-          <span>{convertAndFormat(total, currency, rates)}</span>
+          <span>{ratesLoading ? <SkeletonLoader className="h-6 w-28" /> : convertAndFormat(total, currency, rates)}
+</span>
         </div>
       </div>
 

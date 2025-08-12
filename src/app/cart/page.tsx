@@ -25,9 +25,9 @@ export default function CartPage() {
           <div className="text-center py-12">
             <h2 className="text-xl font-semibold text-gray-900 mb-2">Your cart is empty</h2>
             <p className="text-gray-600 mb-4">Add some items to your cart before proceeding to checkout.</p>
-            <a href="/shop" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+            <Link href="/shop" className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
               Continue Shopping
-            </a>
+            </Link>
           </div>
         ) : (
           <>

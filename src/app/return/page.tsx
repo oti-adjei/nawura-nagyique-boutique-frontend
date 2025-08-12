@@ -1,3 +1,5 @@
+'use client';
+
 import { Suspense } from 'react';
 import StripeReturnClient from '../../components/checkout/StripeReturnClient'; // Import the component we just made
 import { Box, CircularProgress, Typography } from '@mui/material';

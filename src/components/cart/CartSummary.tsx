@@ -6,6 +6,7 @@ interface CartSummaryProps {
   total: number;
 }
 
+// export function CartSummary() {
 export function CartSummary({ total }: CartSummaryProps) {
   const router = useRouter();
 
@@ -21,12 +22,20 @@ export function CartSummary({ total }: CartSummaryProps) {
         Go back to shopping
       </button>
 
-      <button
+     <div>
+      {/* Display total amount */}
+      <p className="text-lg font-semibold text-gray-900 mb-4">
+        Total: <span className="text-red-700">${total.toFixed(2)}</span>
+      </p>
+
+      {/* Proceed to checkout button */}
+       <button
         onClick={() => router.push('/checkout')}
         className="bg-red-700 text-white px-8 py-3 hover:bg-red-800 transition duration-200"
       >
         Check Out
       </button>
+     </div>
     </div>
   );
 }
