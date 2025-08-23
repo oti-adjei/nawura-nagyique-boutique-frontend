@@ -93,6 +93,14 @@ export interface StrapiImage {
 }
 
   //  ---------- Raw Product from API ----------
+export interface ProductVariant {
+  id: number;
+  color: string;
+  size: string;
+  stock: number;
+  sku: string;
+}
+
 export interface Product {
   id: number;
   documentId: string;
@@ -100,11 +108,12 @@ export interface Product {
   description: string;
   price: number;
   weight?: number; // Weight in grams for shipping calculation
-  availableColors?: Color[];
+  availableColors?: string[]; // Now just strings from variants
   tags?: string[]; // Optional: if you want to display categories
   category?: string;
-  sizes?: Size[];
-  stock: number;
+  sizes?: string[]; // Now just strings from variants
+  variants?: ProductVariant[]; // Optional for backward compatibility
+  stock?: number; // Total stock (computed from variants or direct value)
   isFeatured: boolean;
   createdAt: string;
   updatedAt: string;
@@ -127,13 +136,20 @@ export interface DisplayProduct {
   category?: string;
   rating?: number;
   reviewCount?: number;
-  colors?: string[];// Optional: if you want to display categories
+  colors: string[]; // Available colors from variants
   tags?: string[]; // Optional: if you want to display categories
-  sizes?: (string | number)[];
+  sizes: string[]; // Available sizes from variants
   thumbnails?: string[];
   description?: string;
   outOfStock?: boolean;
   slug: string;
+  variants: {
+    [key: string]: {
+      stock: number;
+      sku: string;
+    };
+  };
+  totalStock: number;
 }
 
 // ---------- Related Product ----------
@@ -154,8 +170,23 @@ export function toDisplayProduct(product: Product): DisplayProduct {
 
   const images = product.images ?? [];
 
-   // Determine the main image URL safely
+  // Determine the main image URL safely
   const mainImageUrl = images.length > 0 ? getImageUrl(images[0]) : '';
+
+  // Create variant map for easy lookup with fallback for old data structure
+  const variantMap = (product.variants ?? []).reduce((acc, variant) => {
+    const key = `${variant.color}-${variant.size}`;
+    acc[key] = {
+      stock: variant.stock,
+      sku: variant.sku
+    };
+    return acc;
+  }, {} as DisplayProduct['variants']);
+
+  // Calculate total stock from variants or use the product stock field for backward compatibility
+  const totalStock = product.variants 
+    ? product.variants.reduce((total, variant) => total + variant.stock, 0)
+    : (product.stock ?? 0);
 
   return {
     id: product.id,
@@ -165,13 +196,38 @@ export function toDisplayProduct(product: Product): DisplayProduct {
     allImages: product.images?.map(getImageUrl) ?? [],
     thumbnails: product.images?.map(getThumbnailUrl) ?? [],
     slug: product.slug,
-    outOfStock: product.stock <= 0,
+    outOfStock: totalStock <= 0,
     description: product.description,
-    colors: product.availableColors?.map((c) => c.name),
-    sizes: product.sizes?.map((s) => s.name),
+    colors: product.availableColors ?? [],
+    sizes: product.sizes ?? [],
     category: product.category,
     tags: product.tags,
+    variants: variantMap,
+    totalStock
   };
+}
+
+// Helper functions for variant operations
+export function getVariantStock(product: DisplayProduct, color: string, size: string): number {
+  return product.variants[`${color}-${size}`]?.stock ?? 0;
+}
+
+export function isVariantAvailable(product: DisplayProduct, color: string, size: string): boolean {
+  return getVariantStock(product, color, size) > 0;
+}
+
+export function getVariantSku(product: DisplayProduct, color: string, size: string): string | undefined {
+  return product.variants[`${color}-${size}`]?.sku;
+}
+
+// Get all available colors for a specific size
+export function getAvailableColorsForSize(product: DisplayProduct, size: string): string[] {
+  return product.colors.filter(color => isVariantAvailable(product, color, size));
+}
+
+// Get all available sizes for a specific color
+export function getAvailableSizesForColor(product: DisplayProduct, color: string): string[] {
+  return product.sizes.filter(size => isVariantAvailable(product, color, size));
 }
 
 // ---------- Optional: Type Guard ----------
@@ -184,6 +240,29 @@ export function toDisplayProduct(product: Product): DisplayProduct {
 //     typeof obj.slug === 'string'
 //   );
 // }
+
+export function generateSKU(
+  productName: string,
+  color: string,
+  size: string
+): string {
+  // Convert product name to uppercase acronym
+  const nameAcronym = productName
+    .split(' ')
+    .map(word => word[0])
+    .join('')
+    .toUpperCase();
+
+  // Convert color to uppercase, take first 3 letters
+  const colorCode = color.slice(0, 3).toUpperCase();
+
+  // Size code (if numeric, pad with zeros)
+  const sizeCode = isNaN(Number(size)) 
+    ? size.slice(0, 2).toUpperCase() 
+    : size.padStart(2, '0');
+
+  return `${nameAcronym}-${colorCode}-${sizeCode}`;
+}
 
 export function isDisplayProduct(obj: unknown): obj is DisplayProduct {
   // First, check if obj is an object and not null

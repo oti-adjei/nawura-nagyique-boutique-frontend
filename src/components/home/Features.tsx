@@ -42,7 +42,7 @@ const Features = () => {
   const features = staticFeaturesData;
 
   return (
-    <section className="py-10 px-4 md:px-10 bg-white my-6">
+    <section className="py-10 px-4 bg-white my-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {features.map((feature) => {
           const IconComponent = feature.icon; // This line is key for React Icons

@@ -18,7 +18,7 @@ const LegacySection = ({ legacyContent }: LegacySectionProps) => {
   const imageUrl = image?.url ? image.url : null;
 
   return (
-   <section className="w-full my-14 py-20 bg-[#f8eff3]">
+   <section className="w-full my-14 py-20 lg:px-[130px] px-5 bg-[#f8eff3]">
   <div className="flex flex-col md:flex-row items-center justify-center max-w-6xl mx-auto gap-y-10 md:gap-x-16">
     
     {/* Left: Image */}

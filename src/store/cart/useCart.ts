@@ -7,6 +7,8 @@ import { persist } from 'zustand/middleware';
 export interface CartItem extends DisplayProduct {
   quantity: number;
   selectedSize: string;
+  selectedColor: string;
+  variantSku?: string;
 }
 
 interface CartState {
@@ -30,13 +32,18 @@ export const useCartStore = create<CartState>()(
                 // const quantity = item.quantity ?? 1; 
 
                 const existingItem = get().items.find(
-                    (i) => i.id === item.id && i.selectedSize === item.selectedSize
+                    (i) => 
+                      i.id === item.id && 
+                      i.selectedSize === item.selectedSize &&
+                      i.selectedColor === item.selectedColor
                 );
 
                 if (existingItem) {
                     set({
                         items: get().items.map((i) =>
-                            i.id === item.id && i.selectedSize === item.selectedSize
+                            i.id === item.id && 
+                            i.selectedSize === item.selectedSize &&
+                            i.selectedColor === item.selectedColor
                                 ? { ...i, quantity: i.quantity + item.quantity }
                                 : i
                         ),

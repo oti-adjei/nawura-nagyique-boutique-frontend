@@ -6,7 +6,14 @@ import {  useCallback, useState } from 'react';
 import { FaStar, FaRegStar, FaStarHalfAlt, FaRegHeart, FaShoppingCart, } from 'react-icons/fa';
 // FaCcVisa, FaCcMastercard, FaCcAmex
 import { IoIosArrowDown } from 'react-icons/io';
-import type { DisplayProduct } from '@/types/product'; // Adjust path if needed
+import type { DisplayProduct } from '@/types/product';
+import { 
+  getAvailableSizesForColor, 
+  getAvailableColorsForSize, 
+  getVariantStock, 
+  isVariantAvailable,
+  getVariantSku 
+} from '@/types/product';
 import type { CartAdditionItem } from '@/types/cart'; // Adjust path, add CartAdditionItem
 import AddToCartToast from '@/components/cart/AddToCartToast';
 import { CartItem, useCartStore } from '@/store/cart/useCart';
@@ -45,8 +52,24 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
   const product = productData;
   //console.log("product in displaiy " + JSON.stringify(product))
-  const [selectedSize, setSelectedSize] = useState<string | number>(product.sizes?.[0] ?? '');
+  const [selectedColor, setSelectedColor] = useState<string>(product.colors[0] ?? '');
+  const [selectedSize, setSelectedSize] = useState<string>(product.sizes[0] ?? '');
   const [quantity, setQuantity] = useState<number>(1);
+  
+  // Get available sizes for selected color (always show all sizes if no variants)
+  const availableSizesForColor = product.variants 
+    ? (selectedColor ? getAvailableSizesForColor(product, selectedColor) : [])
+    : product.sizes;
+
+  // Get available colors for selected size (always show all colors if no variants)
+  const availableColorsForSize = product.variants
+    ? (selectedSize ? getAvailableColorsForSize(product, selectedSize) : [])
+    : product.colors;
+
+  // Get stock for selected variant or total stock if no variants
+  const selectedVariantStock = product.variants
+    ? (selectedColor && selectedSize ? getVariantStock(product, selectedColor, selectedSize) : 0)
+    : product.totalStock;
   // const [currentImage, setCurrentImage] = useState<string>(product.imageUrl);
 
   const [toastItem, setToastItem] = useState<CartAdditionItem | null>(null);
@@ -60,26 +83,38 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
   // --- ADD THIS: handleAddToCart function ---
   const handleAddToCart = useCallback(() => {
-    //console.log("handleAddToCart FIRED!");
-    // Access the Zustand action
-    // const { addToCart } = useCartStore.getState(); // Or use the hook if preferred for reactivity
+    // Validate selection
+    if (!selectedColor || !selectedSize) {
+      alert('Please select both color and size');
+      return;
+    }
 
-    // Get the addItem action from your Zustand store
-    // Using .getState() is common for actions that don't need to trigger re-renders in this component directly.
-    // If your store setup returns actions from the hook itself, you might do:
-    // const { addItem } = useCartStore(); and add addItem to dependencies.
-    const addItemToCartStore = useCartStore.getState().addToCart; // Assuming your store has an 'addItem' action
+    // Check if product is out of stock
+    if (product.variants) {
+      const variantStock = getVariantStock(product, selectedColor, selectedSize);
+      if (variantStock < quantity) {
+        alert(`Sorry, only ${variantStock} items available in this color and size`);
+        return;
+      }
+    } else {
+      if (product.totalStock < quantity) {
+        alert(`Sorry, only ${product.totalStock} items available`);
+        return;
+      }
+    }
 
-    // Construct the CartItem object
-    // It spreads all properties from 'product' (DisplayProduct)
-    // and adds/overrides 'quantity' and 'selectedSize'.
+    const addItemToCartStore = useCartStore.getState().addToCart;
+
     const cartItemToAdd: CartItem = {
-      ...product, // Spreads all properties from DisplayProduct
-      quantity: quantity,
-      selectedSize: String(selectedSize), // Ensures selectedSize is a string, as per CartItem interface
+      ...product,
+      quantity,
+      selectedSize: String(selectedSize),
+      selectedColor: selectedColor,
+      variantSku: product.variants 
+        ? getVariantSku(product, selectedColor, selectedSize)
+        : undefined,
     };
 
-    // Call the Zustand action to add the item to the cart
     addItemToCartStore(cartItemToAdd);
     console.log(`Added to cart via Zustand:`, cartItemToAdd);
 
@@ -88,10 +123,10 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
     const itemForToast: CartAdditionItem = {
       name: cartItemToAdd.name,
       price: cartItemToAdd.price,
-      imageUrl: product.imageUrl, // Use the visually current image for the toast
-      color: cartItemToAdd.colors?.[0], // Or selected color if you implement that
-      size: cartItemToAdd.selectedSize, // This is now a string
-      // quantity: cartItemToAdd.quantity, // Add if your toast displays quantity
+      imageUrl: product.imageUrl,
+      color: selectedColor,
+      size: selectedSize,
+      quantity,
     };
 
     // Show the toast
@@ -117,9 +152,9 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
           {/* Product Info */}
           <div className="lg:w-1/2 mt-4 lg:mt-0">
-            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">
+            <h3 className="text-3xl sm:text-4xl font-bold text-gray-900">
               {product.name}
-            </h1>
+            </h3>
 
             {/* Rating and Reviews */}
             {product.rating && product.rating > 0 && (
@@ -161,35 +196,75 @@ export default function ProductDisplay({ productData }: ProductDisplayProps) {
 
               {/* Color Selector */}
               <div>
-                <h3 className="text-lg font-medium text-gray-700">Color: <span className="font-bold text-gray-900">{product.colors?.[0]}</span></h3>
-                <div className="relative mt-2 border border-gray-300 rounded-md px-4 py-3 text-left cursor-pointer hover:border-gray-400 transition-colors focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 flex justify-between items-center text-gray-800 bg-white">
-                  <span className="font-medium">{product.colors?.[0]}</span>
-                  <IoIosArrowDown className="h-5 w-5 text-gray-500" aria-hidden="true" />
+                <h3 className="text-lg font-medium text-gray-700">
+                  Color: <span className="font-bold text-gray-900">{selectedColor}</span>
+                  {selectedVariantStock > 0 && (
+                    <span className="ml-2 text-sm text-gray-500">
+                      ({selectedVariantStock} in stock)
+                    </span>
+                  )}
+                </h3>
+                <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-8">
+                  {product.colors.map((color) => {
+                    const isAvailable = product.variants
+                      ? selectedSize
+                        ? isVariantAvailable(product, color, selectedSize)
+                        : true
+                      : product.totalStock > 0;
+                    
+                    return (
+                      <button
+                        key={color}
+                        onClick={() => setSelectedColor(color)}
+                        disabled={!isAvailable}
+                        className={`
+                          border rounded-md py-2.5 px-3 text-sm font-medium flex items-center justify-center transition-colors duration-150 focus:outline-none
+                          ${!isAvailable && 'opacity-50 cursor-not-allowed'}
+                          ${selectedColor === color
+                            ? 'bg-gray-900 border-gray-900 text-white'
+                            : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200'
+                          }
+                      `}
+                      >
+                        {color}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
               {/* Size Selector */}
               <div className="mt-8">
-                <h3 className="text-lg font-medium text-gray-700">Size: <span className="font-bold text-gray-900">{selectedSize}</span></h3>
+                <h3 className="text-lg font-medium text-gray-700">
+                  Size: <span className="font-bold text-gray-900">{selectedSize}</span>
+                </h3>
 
-                {/* Adjusted grid columns for responsiveness */}
                 <div className="mt-3 grid grid-cols-4 gap-3 sm:grid-cols-6 md:grid-cols-7 lg:grid-cols-8">
-                  {product.sizes?.map((size) => (
-                    <button
-                      key={size}
-                      onClick={() => setSelectedSize(size)}
-                      className={`
-                        border rounded-md py-2.5 px-1 text-sm font-medium flex items-center justify-center transition-colors duration-150 focus:outline-none
-                        ${selectedSize === size
-                          // Updated Selected Style
-                          ? 'bg-gray-900 border-gray-900 text-white'
-                          : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200'
-                        }
-                    `}
-                    >
-                      {size}
-                    </button>
-                  ))}
+                  {product.sizes.map((size) => {
+                    const isAvailable = product.variants
+                      ? selectedColor
+                        ? isVariantAvailable(product, selectedColor, size)
+                        : true
+                      : product.totalStock > 0;
+
+                    return (
+                      <button
+                        key={size}
+                        onClick={() => setSelectedSize(size)}
+                        disabled={!isAvailable}
+                        className={`
+                          border rounded-md py-2.5 px-1 text-sm font-medium flex items-center justify-center transition-colors duration-150 focus:outline-none
+                          ${!isAvailable && 'opacity-50 cursor-not-allowed'}
+                          ${selectedSize === size
+                            ? 'bg-gray-900 border-gray-900 text-white'
+                            : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200'
+                          }
+                      `}
+                      >
+                        {size}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

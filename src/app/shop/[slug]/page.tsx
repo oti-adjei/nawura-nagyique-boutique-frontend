@@ -17,8 +17,10 @@ export default async function ProductPage(
 
   const product = await getProductBySlug(slug);
   if (!product) notFound();
+  console.log('product', product);
 
   const displayProduct = toDisplayProduct(product);
+  console.log('displayProduct', displayProduct);
   return (
     <main className="bg-white">
       <ProductDisplay productData={displayProduct} />
